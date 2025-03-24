@@ -26,6 +26,7 @@ function App() {
         </p>
         <p>
           Testing hehehe git push #8
+          Bumal
         </p>
       </div>
       <p className="read-the-docs">
