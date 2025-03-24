@@ -25,7 +25,7 @@ function App() {
           Edit <code>src/App.jsx</code> and save to test HMR
         </p>
         <p>
-conflict recoled by ish
+conflict recoled by Bumal
         </p>
       </div>
       <p className="read-the-docs">
