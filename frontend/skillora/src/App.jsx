@@ -25,8 +25,7 @@ function App() {
           Edit <code>src/App.jsx</code> and save to test HMR
         </p>
         <p>
-          Testing hehehe git push #8
-          Bumal
+conflict recoled by janindu
         </p>
       </div>
       <p className="read-the-docs">
