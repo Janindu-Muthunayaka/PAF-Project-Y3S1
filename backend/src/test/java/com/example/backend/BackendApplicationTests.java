@@ -1,10 +1,10 @@
-package com.skillora.app;
+package com.example.backend;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class AppApplicationTests {
+class BackendApplicationTests {
 
 	@Test
 	void contextLoads() {
