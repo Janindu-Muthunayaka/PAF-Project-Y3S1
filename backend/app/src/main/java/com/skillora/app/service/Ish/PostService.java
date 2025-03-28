@@ -1,10 +1,10 @@
-package com.skillora.app.service;
+package com.skillora.app.service.Ish;
 
-import com.skillora.app.model.Media;
-import com.skillora.app.model.Post;
+import com.skillora.app.model.Ish.Media;
+import com.skillora.app.model.Ish.Post;
 import com.skillora.app.model.dto.PostRequest;
 import com.skillora.app.model.dto.PostResponse;
-import com.skillora.app.repository.PostRepository;
+import com.skillora.app.repository.Ish.PostRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

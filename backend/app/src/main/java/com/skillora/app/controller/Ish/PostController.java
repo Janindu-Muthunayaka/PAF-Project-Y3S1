@@ -1,11 +1,11 @@
-package com.skillora.app.controller;
+package com.skillora.app.controller.Ish;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.skillora.app.model.dto.PostRequest;
 import com.skillora.app.model.dto.PostResponse;
-import com.skillora.app.service.PostService;
+import com.skillora.app.service.Ish.PostService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

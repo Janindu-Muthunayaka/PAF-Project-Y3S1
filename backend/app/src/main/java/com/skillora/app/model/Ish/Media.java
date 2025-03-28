@@ -1,4 +1,4 @@
-package com.skillora.app.model;
+package com.skillora.app.model.Ish;
 
 public class Media {
     
