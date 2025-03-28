@@ -64,5 +64,66 @@ export const categoryService = {
   updateCategory: (id, category) => api.put(`/categories/${id}`, category),
   deleteCategory: (id) => api.delete(`/categories/${id}`),
 };
+//Reaction service
+export const reactionService = {
+  addReaction: (postId, userId, type) => {
+    const reaction = { postId, userId, type };
+    return axios.post(`${API_URL}/reactions`, reaction);
+  },
+  
+  getPostReactions: (postId) => {
+    return axios.get(`${API_URL}/reactions/post/${postId}`);
+  },
+  
+  getUserReaction: (postId, userId) => {
+    return axios.get(`${API_URL}/reactions/post/${postId}/user/${userId}`);
+  },
+  
+  deleteReaction: (postId, userId) => {
+    return axios.delete(`${API_URL}/reactions/post/${postId}/user/${userId}`);
+  }
+};
+// Comment Service
+export const commentService = {
+
+  createComment: (postId, userId, content) => {
+    const comment = { postId, userId, content };
+    return axios.post(`${API_URL}/comments/${postId}`, comment);
+  },
+
+
+  getCommentsByPostId: (postId) => {
+    return axios.get(`${API_URL}/comments/${postId}`);
+  },
+
+  deleteComment: (commentId) => {
+    return axios.delete(`${API_URL}/comments/${commentId}`);
+  },
+
+  updateComment: (commentId, updatedContent) => {
+    const updatedComment = { content: updatedContent };
+    return axios.put(`${API_URL}/comments/${commentId}`, updatedComment);
+  }
+};
+// Reply Service
+export const replyService = {
+
+  createReply: (commentId, userId, description) => {
+    return axios.post(`${API_URL}/replies?commentId=${commentId}&description=${description}&userId=${userId}`);
+  },
+
+  getRepliesForComment: (commentId) => {
+    return axios.get(`${API_URL}/replies/comment/${commentId}`);
+  },
+
+  getReplyById: (id) => {
+    return axios.get(`${API_URL}/replies/${id}`);
+  },
+
+  deleteReply: (id) => {
+    return axios.delete(`${API_URL}/replies/${id}`);
+  }
+};
+
 
 export default api;

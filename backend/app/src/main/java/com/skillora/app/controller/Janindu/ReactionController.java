@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/reactions")
+@RequestMapping("/api/reactions")
 public class ReactionController {
 
     @Autowired
