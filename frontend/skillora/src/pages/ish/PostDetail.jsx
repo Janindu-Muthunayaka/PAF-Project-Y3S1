@@ -12,9 +12,11 @@ import {
   FiTrash2,
   FiLock,
   FiPlusCircle,
+  FiTrash,
   FiSend
 } from 'react-icons/fi';
 import { postService } from '../../services/ish/api';
+import { commentService, replyService } from "../../services/ish/api";
 import { useUser } from '../../context/ish/UserContext';
 import { usePost } from '../../context/ish/PostContext';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -24,6 +26,7 @@ import Badge from '../../components/ish/ui/Badge';
 import Button from '../../components/ish/ui/Button';
 import Input from '../../components/ish/ui/Input';
 
+//post details
 const PostDetail = () => {
   const { postId } = useParams();
   const navigate = useNavigate();
@@ -37,7 +40,82 @@ const PostDetail = () => {
   const [bookmarked, setBookmarked] = useState(false);
   const [showOptions, setShowOptions] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
-  const [comment, setComment] = useState('');
+
+  const { userId } = { userId: "dummy" }
+  const [comments, setComments] = useState([]);
+  const [newComment, setNewComment] = useState("");
+  const [editingComment, setEditingComment] = useState(null);
+  const [editContent, setEditContent] = useState("");
+  const [replyContent, setReplyContent] = useState("");
+  const [activeReply, setActiveReply] = useState(null);
+
+  useEffect(() => {
+    fetchComments();
+  }, []);
+
+  const fetchComments = async () => {
+    try {
+      const response = await commentService.getCommentsByPostId(postId);
+      setComments(response.data);
+    } catch (error) {
+      console.error("Error fetching comments:", error);
+    }
+  };
+
+  const handleAddComment = async () => {
+    if (!newComment.trim()) return;
+    console.log(`UserID: ${userId}`);
+    try {
+      await commentService.createComment(postId, userId, newComment);
+      setNewComment("");
+      fetchComments();
+    } catch (error) {
+      console.error("Error adding comment:", error);
+    }
+  };
+
+  const handleUpdateComment = async (commentId) => {
+    if (!editContent.trim()) return;
+    try {
+      await commentService.updateComment(commentId, editContent);
+      setEditingComment(null);
+      setEditContent("");
+      fetchComments();
+    } catch (error) {
+      console.error("Error updating comment:", error);
+    }
+  };
+
+  const handleDeleteComment = async (commentId) => {
+    try {
+      await commentService.deleteComment(commentId);
+      fetchComments();
+    } catch (error) {
+      console.error("Error deleting comment:", error);
+    }
+  };
+
+  const handleAddReply = async (commentId) => {
+    if (!replyContent.trim()) return;
+    try {
+      await replyService.createReply(commentId, userId, replyContent);
+      setReplyContent("");
+      setActiveReply(null);
+      fetchComments();
+    } catch (error) {
+      console.error("Error adding reply:", error);
+    }
+  };
+
+  const handleDeleteReply = async (replyId) => {
+    try {
+      await replyService.deleteReply(replyId);
+      fetchComments();
+    } catch (error) {
+      console.error("Error deleting reply:", error);
+    }
+  };
+
 
   useEffect(() => {
     const fetchPost = async () => {
@@ -79,7 +157,6 @@ const PostDetail = () => {
   };
 
   const handleShare = () => {
-    // Copy the current URL to clipboard
     navigator.clipboard.writeText(window.location.href);
     toast.success('Link copied to clipboard');
   };
@@ -352,56 +429,86 @@ const PostDetail = () => {
       </Card>
 
       {/* Comments Section */}
-      <div className="mt-8">
-        <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">Comments</h2>
-        
-        <Card className="mb-6">
-          <form onSubmit={handleCommentSubmit}>
-            <div className="flex items-start">
-              <Avatar 
-                name={user.displayName}
-                size="md"
-                className="mr-3 flex-shrink-0"
-              />
-              <div className="flex-grow">
-                <Input
-                  id="comment-input"
-                  placeholder="Add a comment..."
-                  value={comment}
-                  onChange={(e) => setComment(e.target.value)}
-                  fullWidth
-                />
-              </div>
-              <Button
-                variant="primary"
-                type="submit"
-                className="ml-3"
-                disabled={!comment.trim()}
-                leftIcon={<FiSend />}
-              >
-                Post
-              </Button>
-            </div>
-          </form>
-        </Card>
-        
-        {/* Empty state - no comments yet */}
-        <div className="text-center py-16 px-4 bg-gray-50 dark:bg-dark-800/50 rounded-lg border border-gray-200 dark:border-dark-700">
+      <div className="p-4 bg-gray-800 rounded-lg border border-gray-700 text-white">
+      <h3 className="text-lg font-medium text-gray-900 dark:text-gray">Comments</h3>
+      {comments.length === 0 ? (
+        <div className="text-center py-6">
           <FiMessageSquare className="mx-auto h-10 w-10 text-gray-400 dark:text-gray-500" />
-          <h3 className="mt-2 text-lg font-medium text-gray-900 dark:text-white">No comments yet</h3>
           <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
             Be the first to share your thoughts on this post.
           </p>
-          <Button
-            variant="primary"
-            className="mt-4"
-            leftIcon={<FiPlusCircle />}
-            onClick={() => document.getElementById('comment-input').focus()}
-          >
-            Add a Comment
-          </Button>
         </div>
+      ) : (
+        <ul className="mt-4 space-y-4">
+          {comments.map((comment) => (
+            <li key={comment.id} className="border-b pb-4">
+              {editingComment === comment.id ? (
+                <div>
+                  <textarea
+                    value={editContent}
+                    onChange={(e) => setEditContent(e.target.value)}
+                  />
+                  <Button className="mt-2" onClick={() => handleUpdateComment(comment.id)}>
+                    Update Comment
+                  </Button>
+                </div>
+              ) : (
+                <div className="flex items-center space-x-2 text-gray-900 dark:text-white">
+                  <p className="font-semibold">{comment.userId}:</p>
+                  <p>{comment.description}</p>
+                </div>
+              )}
+              <div className="flex space-x-2 mt-2">
+                <button className="text-blue-500 text-sm" onClick={() => setActiveReply(activeReply === comment.id ? null : comment.id)}>
+                  Reply
+                </button>
+                <button className="text-green-500 text-sm" onClick={() => { setEditingComment(comment.id); setEditContent(comment.content); }}>
+                  <FiEdit />
+                </button>
+                <button className="text-red-500 text-sm" onClick={() => handleDeleteComment(comment.id)}>
+                  <FiTrash />
+                </button>
+              </div>
+              {activeReply === comment.id && (
+                <div className="mt-2">
+                  <textarea
+                    value={replyContent}
+                    onChange={(e) => setReplyContent(e.target.value)}
+                    placeholder="Write a reply..."
+                  />
+                  <Button className="mt-2" onClick={() => handleAddReply(comment.id)}>
+                    Submit Reply
+                  </Button>
+                </div>
+              )}
+              {comment.replies && comment.replies.length > 0 && (
+                <ul className="mt-2 space-y-2 pl-4 border-l">
+                  {comment.replies.map((reply) => (
+                    <li key={reply.id} className="flex justify-between items-center">
+                      <p className="text-gray-700 dark:text-gray-300">{reply.description}</p>
+                      <button className="text-red-500 text-sm" onClick={() => handleDeleteReply(reply.id)}>
+                        <FiTrash />
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </li>
+          ))}
+        </ul>
+      )}
+      <div className="mt-4">
+        <Input
+          id="comment-input"
+          value={newComment}
+          onChange={(e) => setNewComment(e.target.value)}
+          placeholder="Add a comment..."
+        />
+        <Button className="mt-2" leftIcon={<FiPlusCircle />} onClick={handleAddComment}>
+          Add Comment
+        </Button>
       </div>
+    </div>
     </div>
   );
 };

@@ -86,8 +86,9 @@ export const reactionService = {
 // Comment Service
 export const commentService = {
 
-  createComment: (postId, userId, content) => {
-    const comment = { postId, userId, content };
+  createComment: (postId, userId, description) => {
+    const comment = { postId, userId, description };
+    console.log("Comment payload:", comment);
     return axios.post(`${API_URL}/comments/${postId}`, comment);
   },
 
@@ -101,7 +102,8 @@ export const commentService = {
   },
 
   updateComment: (commentId, updatedContent) => {
-    const updatedComment = { content: updatedContent };
+    const updatedComment = { description: updatedContent };
+    console.log("Comment payload:", updatedComment);
     return axios.put(`${API_URL}/comments/${commentId}`, updatedComment);
   }
 };
