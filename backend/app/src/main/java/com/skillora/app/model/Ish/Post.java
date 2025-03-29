@@ -1,4 +1,4 @@
-package com.skillora.app.model;
+package com.skillora.app.model.Ish;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;

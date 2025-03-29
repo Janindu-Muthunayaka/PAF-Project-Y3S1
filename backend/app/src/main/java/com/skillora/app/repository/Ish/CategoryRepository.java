@@ -1,9 +1,9 @@
-package com.skillora.app.repository;
+package com.skillora.app.repository.Ish;
 
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
-import com.skillora.app.model.Category;
+import com.skillora.app.model.Ish.Category;
 
 import java.util.Optional;
 

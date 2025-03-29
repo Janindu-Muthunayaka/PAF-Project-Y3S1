@@ -1,8 +1,8 @@
-package com.skillora.app.service;
+package com.skillora.app.service.Ish;
 
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
-import com.skillora.app.model.Media;
+import com.skillora.app.model.Ish.Media;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,7 +19,9 @@ public class CloudinaryService {
     @Autowired
     private Cloudinary cloudinary;
     
+    @SuppressWarnings("null")
     public Media uploadMedia(MultipartFile file) throws IOException {
+        @SuppressWarnings("rawtypes")
         Map uploadResult;
         
         if (file.getContentType().startsWith("image/")) {
@@ -59,6 +61,7 @@ public class CloudinaryService {
         }
     }
     
+    @SuppressWarnings("null")
     public List<Media> uploadMultipleMedia(List<MultipartFile> files) throws IOException {
         List<Media> mediaList = new ArrayList<>();
         

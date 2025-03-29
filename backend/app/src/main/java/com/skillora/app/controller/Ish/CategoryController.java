@@ -1,7 +1,7 @@
-package com.skillora.app.controller;
+package com.skillora.app.controller.Ish;
 
-import com.skillora.app.model.Category;
-import com.skillora.app.service.CategoryService;
+import com.skillora.app.model.Ish.Category;
+import com.skillora.app.service.Ish.CategoryService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

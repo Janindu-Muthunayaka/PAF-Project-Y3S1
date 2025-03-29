@@ -1,7 +1,7 @@
-package com.skillora.app.service;
+package com.skillora.app.service.Ish;
 
-import com.skillora.app.model.Category;
-import com.skillora.app.repository.CategoryRepository;
+import com.skillora.app.model.Ish.Category;
+import com.skillora.app.repository.Ish.CategoryRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

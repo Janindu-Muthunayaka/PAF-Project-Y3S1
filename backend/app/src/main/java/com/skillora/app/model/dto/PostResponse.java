@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.skillora.app.model.Media;
+import com.skillora.app.model.Ish.Media;
 
 public class PostResponse {
     

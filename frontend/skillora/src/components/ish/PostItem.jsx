@@ -1,23 +1,86 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { FiHeart, FiMessageSquare, FiBookmark, FiShare2, FiMoreVertical, FiEdit, FiTrash2 } from 'react-icons/fi';
+import { 
+  FiHeart, 
+  FiBook, 
+  FiZap, 
+  FiCode, 
+  FiUsers, 
+  FiMessageSquare, 
+  FiBookmark, 
+  FiShare2, 
+  FiMoreVertical, 
+  FiEdit, 
+  FiTrash2 
+} from 'react-icons/fi';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useUser } from '../../context/ish/UserContext';
 import { usePost } from '../../context/ish/PostContext';
-import { motion, AnimatePresence } from 'framer-motion';
+import { commentService,replyService,reactionService } from '../../services/ish/api';
 import Avatar from './ui/Avatar';
 import Badge from './ui/Badge';
+
+// Reaction Types Configuration
+const REACTION_TYPES = [
+  { 
+    type: 'Liked', 
+    icon: FiHeart, 
+    description: 'Acknowledging the effort or creativity' 
+  },
+  { 
+    type: 'Learned', 
+    icon: FiBook, 
+    description: 'Content contributed to your growth' 
+  },
+  { 
+    type: 'Inspired', 
+    icon: FiZap, 
+    description: 'Sparked new ideas or motivation' 
+  },
+  { 
+    type: 'Implemented', 
+    icon: FiCode, 
+    description: 'Applied skills or concepts' 
+  },
+  { 
+    type: 'Collaborated', 
+    icon: FiUsers, 
+    description: 'Interested in working together' 
+  }
+];
 
 const PostItem = ({ post }) => {
   const { user } = useUser();
   const { deletePost } = usePost();
   const navigate = useNavigate();
   
-  const [liked, setLiked] = useState(false);
-  const [bookmarked, setBookmarked] = useState(false);
+  const [reactions, setReactions] = useState([]);
+  const [userReaction, setUserReaction] = useState(null);
+  const [showReactionMenu, setShowReactionMenu] = useState(false);
   const [showOptions, setShowOptions] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
+  const [bookmarked, setBookmarked] = useState(false);
   
+  // Fetch reactions when post loads or changes
+  useEffect(() => {
+    const fetchReactions = async () => {
+      try {
+        const reactionResponse = await reactionService.getPostReactions(post.id);
+        console.log('Reactions Response:', reactionResponse.data); // Check if data is as expected
+        setReactions(reactionResponse.data);
+  
+        const userReactionResponse = await reactionService.getUserReaction(post.id, user.id);
+        console.log('User Reaction Response:', userReactionResponse.data); // Check if user reaction is fetched
+        setUserReaction(userReactionResponse.data);
+      } catch (error) {
+        console.error('Failed to fetch reactions', error);
+      }
+    };
+  
+    fetchReactions();
+  }, [post.id, user.id]);
+
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     const now = new Date();
@@ -37,9 +100,85 @@ const PostItem = ({ post }) => {
 
   const isPostOwner = post.userId === user.id;
 
-  const handleLike = () => {
-    setLiked(!liked);
-    toast.success(liked ? 'Post unliked' : 'Post liked');
+  // Handle reaction selection
+  const handleReaction = async (reactionType) => {
+    try {
+      // If user already has this reaction, remove it
+      if (userReaction && userReaction.type === reactionType) {
+        await reactionService.deleteReaction(post.id, user.id);
+        setUserReaction(null);
+        toast.info('Reaction removed');
+      } else {
+        // Add new reaction
+        const response = await reactionService.addReaction(post.id, user.id, reactionType);
+        setUserReaction(response.data);
+        toast.success(`Reacted with: ${reactionType}`);
+      }
+      
+      // Refresh reactions
+      const updatedReactions = await reactionService.getPostReactions(post.id);
+      setReactions(updatedReactions.data);
+      
+      setShowReactionMenu(false);
+    } catch (error) {
+      toast.error('Failed to process reaction');
+      console.error(error);
+    }
+  };
+  
+  // Reaction Menu Dropdown
+  const ReactionMenu = () => (
+    <div className="absolute bottom-full left-0 mb-2 bg-white/10 backdrop-blur-md rounded-xl shadow-lg p-2 flex space-x-2">
+      {REACTION_TYPES.map(({ type, icon: Icon, description }) => (
+        <div 
+          key={type} 
+          className="group relative"
+        >
+          <button
+            onClick={() => handleReaction(type)}
+            className={`
+              p-2 rounded-full transition-all 
+              ${userReaction?.type === type 
+                ? 'bg-blue-500/20 text-blue-500' 
+                : 'hover:bg-white/10 text-gray-300 hover:text-white'}
+            `}
+            title={description}
+          >
+            <Icon className="h-5 w-5" />
+          </button>
+          <span className="
+            absolute -top-8 left-1/2 -translate-x-1/2 
+            bg-black/70 text-white text-xs px-2 py-1 
+            rounded opacity-0 group-hover:opacity-100 
+            transition-opacity duration-200
+          ">
+            {type}
+          </span>
+        </div>
+      ))}
+    </div>
+  );
+  
+  // Reaction Summary
+  const ReactionSummary = () => {
+    const reactionCounts = reactions.reduce((acc, reaction) => {
+      acc[reaction.type] = (acc[reaction.type] || 0) + 1;
+      return acc;
+    }, {});
+    
+    return (
+      <div className="flex space-x-2 items-center">
+        {Object.entries(reactionCounts).map(([type, count]) => {
+          const { icon: Icon } = REACTION_TYPES.find(r => r.type === type) || {};
+          return Icon ? (
+            <div key={type} className="flex items-center space-x-1">
+              <Icon className="h-4 w-4 text-gray-400" />
+              <span className="text-sm text-gray-300">{count}</span>
+            </div>
+          ) : null;
+        })}
+      </div>
+    );
   };
 
   const handleBookmark = () => {
@@ -140,45 +279,45 @@ const PostItem = ({ post }) => {
         </div>
         
         {/* Options Dropdown */}
-<div className="relative">
-  <button 
-    className="p-2.5 text-gray-400 hover:text-white hover:bg-gray-700/60 rounded-full transition-colors duration-200 focus:outline-none"
-    onClick={() => setShowOptions(!showOptions)}
-    aria-label="Post options"
-  >
-    <FiMoreVertical className="h-5 w-5" />
-  </button>
-  
-  <AnimatePresence>
-    {showOptions && isPostOwner && (
-      <motion.div 
-        initial={{ opacity: 0, scale: 0.97, y: 5 }}
-        animate={{ opacity: 1, scale: 1, y: 0 }}
-        exit={{ opacity: 0, scale: 0.97, y: 5 }}
-        transition={{ duration: 0.15, ease: "easeOut" }}
-        className="absolute right-0 mt-1 w-56 bg-[var(--dark-surface)] rounded-xl z-20 backdrop-blur-sm bg-opacity-95"
-      >
-        <div className="py-2 space-y-2">
+        <div className="relative">
           <button 
-            className="flex items-center w-full px-5 py-3 text-gray-300 hover:bg-gray-700/50 transition-colors duration-150 rounded-lg mx-2"
-            onClick={handleEdit}
+            className="p-2.5 text-gray-400 hover:text-white hover:bg-gray-700/60 rounded-full transition-colors duration-200 focus:outline-none"
+            onClick={() => setShowOptions(!showOptions)}
+            aria-label="Post options"
           >
-            <FiEdit className="mr-3.5 h-5 w-5 text-gray-400" />
-            <span className="font-medium">Edit Post</span>
+            <FiMoreVertical className="h-5 w-5" />
           </button>
           
-          <button 
-            className="flex items-center w-full px-5 py-3 text-[var(--danger)] hover:bg-gray-700/50 transition-colors duration-150 rounded-lg mx-2"
-            onClick={handleDeleteClick}
-          >
-            <FiTrash2 className="mr-3.5 h-5 w-5" />
-            <span className="font-medium">Delete Post</span>
-          </button>
+          <AnimatePresence>
+            {showOptions && isPostOwner && (
+              <motion.div 
+                initial={{ opacity: 0, scale: 0.97, y: 5 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.97, y: 5 }}
+                transition={{ duration: 0.15, ease: "easeOut" }}
+                className="absolute right-0 mt-1 w-56 bg-[var(--dark-surface)] rounded-xl z-20 backdrop-blur-sm bg-opacity-95"
+              >
+                <div className="py-2 space-y-2">
+                  <button 
+                    className="flex items-center w-full px-5 py-3 text-gray-300 hover:bg-gray-700/50 transition-colors duration-150 rounded-lg mx-2"
+                    onClick={handleEdit}
+                  >
+                    <FiEdit className="mr-3.5 h-5 w-5 text-gray-400" />
+                    <span className="font-medium">Edit Post</span>
+                  </button>
+                  
+                  <button 
+                    className="flex items-center w-full px-5 py-3 text-[var(--danger)] hover:bg-gray-700/50 transition-colors duration-150 rounded-lg mx-2"
+                    onClick={handleDeleteClick}
+                  >
+                    <FiTrash2 className="mr-3.5 h-5 w-5" />
+                    <span className="font-medium">Delete Post</span>
+                  </button>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
-      </motion.div>
-    )}
-  </AnimatePresence>
-</div>
       </div>
 
       {/* Post Content */}
@@ -239,14 +378,27 @@ const PostItem = ({ post }) => {
       
       {/* Post Actions */}
       <div className="flex justify-between items-center border-t border-[var(--dark-border)] pt-3">
-        <div className="flex space-x-4">
-          <button 
-            className={`flex items-center space-x-1.5 text-gray-400 hover:text-[var(--danger)] transition ${liked ? 'text-[var(--danger)]' : ''}`}
-            onClick={handleLike}
-          >
-            <FiHeart className={`h-5 w-5 ${liked ? 'fill-current' : ''}`} />
-            <span className="text-sm">Like</span>
-          </button>
+        <div className="flex space-x-4 relative">
+          <div className="relative">
+            <button 
+              className="flex items-center space-x-1.5 text-gray-400 hover:text-blue-500 transition"
+              onClick={() => setShowReactionMenu(!showReactionMenu)}
+            >
+              {userReaction ? (
+                (() => {
+                  const { icon: Icon } = REACTION_TYPES.find(r => r.type === userReaction.type) || {};
+                  return Icon ? <Icon className="h-5 w-5 text-blue-500" /> : null;
+                })()
+              ) : (
+                <FiHeart className="h-5 w-5" />
+              )}
+              <span className="text-sm">
+                {userReaction ? userReaction.type : 'React'}
+              </span>
+            </button>
+            
+            {showReactionMenu && <ReactionMenu />}
+          </div>
         
           <Link to={`/posts/${post.id}`} className="flex items-center space-x-1.5 text-gray-400 hover:text-[var(--primary)] transition">
             <FiMessageSquare className="h-5 w-5" />
@@ -268,6 +420,8 @@ const PostItem = ({ post }) => {
             <span className="text-sm">Share</span>
           </button>
         </div>
+
+        <ReactionSummary />
       </div>
     </div>
   );
