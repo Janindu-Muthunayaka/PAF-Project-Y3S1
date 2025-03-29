@@ -1,4 +1,4 @@
-package com.example.backend.Dto;
+package com.example.backend.Model.Bumal;
 
 public class FollowDto {
     private String user1;

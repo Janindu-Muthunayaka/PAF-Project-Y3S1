@@ -1,11 +1,12 @@
-package com.example.backend.Controller;
+package com.example.backend.Controller.Bumal;
 
-import com.example.backend.Dto.FollowDto;
-import com.example.backend.Dto.GoogleSignUpDto;
-import com.example.backend.Dto.LoginDto;
-import com.example.backend.Dto.profileUpdateDto;
-import com.example.backend.Model.User;
-import com.example.backend.Service.UserService;
+import com.example.backend.Model.Bumal.FollowDto;
+import com.example.backend.Model.Bumal.GoogleSignUpDto;
+import com.example.backend.Model.Bumal.LoginDto;
+import com.example.backend.Model.Bumal.User;
+import com.example.backend.Model.Bumal.profileUpdateDto;
+import com.example.backend.Service.Bumal.UserService;
+
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.support.NullValue;

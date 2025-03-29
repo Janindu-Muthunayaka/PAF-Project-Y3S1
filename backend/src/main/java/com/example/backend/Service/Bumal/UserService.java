@@ -1,7 +1,8 @@
-package com.example.backend.Service;
+package com.example.backend.Service.Bumal;
 
-import com.example.backend.Model.User;
-import com.example.backend.Repository.UserRepository;
+import com.example.backend.Model.Bumal.User;
+import com.example.backend.Repository.Bumal.UserRepository;
+
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

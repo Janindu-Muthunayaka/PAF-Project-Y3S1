@@ -1,4 +1,4 @@
-package com.example.backend.Dto;
+package com.example.backend.Model.Bumal;
 
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
