@@ -16,6 +16,7 @@ const Home = () => {
   const { user } = useUser();
   const { posts, loading, error, fetchPosts } = usePost();
   const navigate = useNavigate();
+  console.log(" This is the working User ID:", user);
   
   const [showFilters, setShowFilters] = useState(false);
   const [categories, setCategories] = useState([]);
@@ -23,6 +24,8 @@ const Home = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [sortBy, setSortBy] = useState('newest');
   
+  
+
   useEffect(() => {
     const fetchCategories = async () => {
       try {
@@ -85,18 +88,18 @@ const Home = () => {
                 size="xl"
                 className="mb-3"
               />
-              <h2 className="text-xl font-semibold text-white">{user.displayName}</h2>
-              <p className="text-gray-400">@{user.username}</p>
+              <h2 className="text-xl font-semibold text-white">{`${user.firstName} ${user.lastName}`}</h2>
+              <p className="text-gray-400">@{user.userName}</p>
             </div>
 
             <div className="border-t border-[var(--dark-border)] border-b py-3 mb-3">
               <div className="flex justify-around">
                 <div className="text-center">
-                  <p className="text-xl font-bold text-white">0</p>
+                  <p className="text-xl font-bold text-white">{user.followers ? user.followers.length : 0}</p>
                   <p className="text-gray-400 text-sm">Followers</p>
                 </div>
                 <div className="text-center">
-                  <p className="text-xl font-bold text-white">0</p>
+                  <p className="text-xl font-bold text-white">{user.following ? user.following.length : 0}</p>
                   <p className="text-gray-400 text-sm">Following</p>
                 </div>
               </div>

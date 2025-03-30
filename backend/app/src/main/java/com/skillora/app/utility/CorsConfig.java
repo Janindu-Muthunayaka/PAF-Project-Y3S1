@@ -14,13 +14,19 @@ public class CorsConfig {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
         
-        config.addAllowedOrigin("*");
+        // Allow credentials to be sent, so replace '*' with the exact origin
+        config.addAllowedOrigin("http://localhost:3000"); 
+        config.addAllowedOrigin("http://localhost:3001"); 
+        config.addAllowedOrigin("http://localhost:3002"); 
         config.addAllowedHeader("*");
         config.addAllowedMethod("GET");
         config.addAllowedMethod("POST");
         config.addAllowedMethod("PUT");
         config.addAllowedMethod("DELETE");
         config.addAllowedMethod("OPTIONS");
+        
+        // Allow credentials to be sent in the request
+        config.setAllowCredentials(true);  // Enable credentials (cookies)
         
         source.registerCorsConfiguration("/**", config);
         return new CorsFilter(source);

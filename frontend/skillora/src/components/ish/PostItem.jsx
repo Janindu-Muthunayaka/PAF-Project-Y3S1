@@ -21,6 +21,8 @@ import { commentService,replyService,reactionService } from '../../services/ish/
 import Avatar from './ui/Avatar';
 import Badge from './ui/Badge';
 
+
+
 // Reaction Types Configuration
 const REACTION_TYPES = [
   { 
@@ -217,6 +219,16 @@ const PostItem = ({ post }) => {
     }
     setConfirmDelete(false);
   };
+  const getUserForPostId = async (postUserId) => {
+    try {
+      const response = await api.getUserById(postUserId);
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching user:", error);
+      return null;
+    }
+  };
+  
 
   return (
     <div className="bg-[var(--dark-surface)] rounded-lg shadow-md overflow-hidden transition-shadow hover:shadow-lg border border-[var(--dark-border)] space-y-4 p-4">
@@ -264,7 +276,7 @@ const PostItem = ({ post }) => {
           />
           <div>
             <div className="flex items-center space-x-2">
-              <h3 className="text-white font-semibold text-base" >User</h3>
+              <h3 className="text-white font-semibold text-base" >{"get by user dhaala hadhanna"}</h3>
               {post.isPinned && (
                 <Badge 
                   variant="primary"

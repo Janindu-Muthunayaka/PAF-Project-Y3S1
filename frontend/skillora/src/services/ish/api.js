@@ -7,6 +7,7 @@ const api = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
+  withCredentials: true, // This makes sure cookies are sent with the request
 });
 
 // Post services
@@ -16,7 +17,7 @@ export const postService = {
   getUserPosts: (userId) => api.get(`/posts/user/${userId}`),
   getUserPinnedPosts: (userId) => api.get(`/posts/user/${userId}/pinned`),
   getPostsByCategory: (category) => api.get(`/posts/category/${category}`),
-  createPost: (postData, files) => {
+  createPost: (id,postData, files) => {
     const formData = new FormData();
     const postBlob = new Blob([JSON.stringify(postData)], { type: 'application/json' });
     
@@ -28,7 +29,7 @@ export const postService = {
       });
     }
     
-    return axios.post(`${API_URL}/posts`, formData, {
+    return axios.post(`${API_URL}/posts/${id}`, formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
@@ -177,4 +178,19 @@ export const userService = {
   getUsernames: (userIds) => api.post('/users/getUsersNames', userIds)
 };
 
+
+// Function to get user data from the session
+export const sessionId = {
+  // Function to get user data from the session
+  getUserData: async () => {
+    try {
+      const response = await api.get('/getUserData'); // Make sure the URL matches your backend route
+
+      return response.data; // This will be the user data returned from your backend
+    } catch (error) {
+      console.error('Error fetching user data:', error);
+      throw error; // Optionally, you can throw the error to handle it later in the frontend
+    }
+  },
+};
 export default api;

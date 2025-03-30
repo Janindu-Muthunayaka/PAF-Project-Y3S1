@@ -7,6 +7,7 @@ import { usePost } from '../../context/ish/PostContext';
 import { categoryService } from '../../services/ish/api';
 import Button from '../../components/ish/ui/Button';
 import { BsPinAngle } from 'react-icons/bs';
+import { useUser } from '../../context/ish/UserContext';
 
 const CreatePost = () => {
   const navigate = useNavigate();
@@ -23,6 +24,7 @@ const CreatePost = () => {
   const [loading, setLoading] = useState(false);
   const [previewUrls, setPreviewUrls] = useState([]);
   const [error, setError] = useState(null);
+  const { user } = useUser();
   
   const fileInputRef = useRef(null);
   const videoInputRef = useRef(null);
@@ -158,7 +160,7 @@ const CreatePost = () => {
         pinned: isPinned
       };
       
-      const createdPost = await createPost(postData, files);
+      const createdPost = await createPost(user.id,postData, files);
       toast.success('Post created successfully!');
       navigate(`/posts/${createdPost.id}`);
     } catch (err) {

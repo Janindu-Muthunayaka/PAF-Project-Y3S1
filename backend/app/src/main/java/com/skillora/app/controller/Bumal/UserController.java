@@ -7,8 +7,11 @@ import com.skillora.app.model.Bumal.User;
 import com.skillora.app.model.Bumal.profileUpdateDto;
 import com.skillora.app.service.Bumal.UserService;
 
+import jakarta.servlet.http.HttpSession;
+
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.web.servlet.server.Session;
 import org.springframework.cache.support.NullValue;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
@@ -16,8 +19,11 @@ import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -68,7 +74,7 @@ public class UserController {
 
         // Register the user
         User registeredUser = userService.register(newUser);
-
+        
         // Create HATEOAS response with self link
         EntityModel<User> resource = EntityModel.of(registeredUser);
         resource.add(WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(UserController.class).registerUser(newUser)).withSelfRel());
@@ -90,6 +96,17 @@ public class UserController {
             if(Objects.equals(loginDto.getPassword(), user.getPassword())){
                 EntityModel<User> resource = EntityModel.of(user);
                 resource.add(WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(UserController.class).getUserByEmail(loginDto.getEmail())).withSelfRel());
+                
+                
+                //storing
+                ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
+                attr.getRequest().getSession().setAttribute("userId", user.getId()); // Store as String
+                System.out.println("Session UserId at login: " + attr.getRequest().getSession().getAttribute("userId"));
+                HttpSession session = attr.getRequest().getSession(false);
+                if (session != null) {
+                    System.out.println("Immediately after setting: " + session.getAttribute("userId"));
+                }
+
 
                 // Return response with HATEOAS links
                 return ResponseEntity.ok(resource);
@@ -205,6 +222,14 @@ public class UserController {
         }
         System.out.print(namesArray);
         return ResponseEntity.ok(namesArray);
+    }
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout() {
+        // Invalidate session
+        ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
+        attr.getRequest().getSession().invalidate();
+
+        return ResponseEntity.ok("Logout successful");
     }
 
 }
