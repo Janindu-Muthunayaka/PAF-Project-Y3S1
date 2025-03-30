@@ -126,6 +126,55 @@ export const replyService = {
     return axios.delete(`${API_URL}/replies/${id}`);
   }
 };
-
+// User services
+export const userService = {
+  // Registration
+  register: (userData) => api.post('/users/register', userData),
+  
+  // Google sign up
+  googleSignUp: (googleUserData) => api.post('/users/googleSignUp', googleUserData),
+  
+  // Login
+  login: (credentials) => api.post('/users/login', credentials),
+  
+  // Get all users
+  getAllUsers: () => api.get('/users/allUsers'),
+  
+  // Get user by email
+  getUserByEmail: (email) => api.get(`/users/getUserByEmail/${email}`),
+  
+  // Get user by ID
+  getUserById: (id) => api.get(`/users/getUserById/${id}`),
+  
+  // Follow a user
+  followUser: (user1Id, user2Id) => {
+    const followData = { user1: user1Id, user2: user2Id };
+    return api.post('/users/follow', followData);
+  },
+  
+  // Get followers
+  getFollowers: (userId) => api.get(`/users/myFollowers/${userId}`),
+  
+  // Unfollow a user
+  unfollowUser: (user1Id, user2Id) => {
+    const unfollowData = { user1: user1Id, user2: user2Id };
+    return api.post('/users/unfollow', unfollowData);
+  },
+  
+  // Update user
+  updateUser: (userId, userData) => api.put(`/users/${userId}`, userData),
+  
+  // Update profile picture
+  updateProfilePic: (userId, profilePicLink) => {
+    const profileData = { profilePicLink };
+    return api.put(`/users/updateProfilePic/${userId}`, profileData);
+  },
+  
+  // Delete user
+  deleteUser: (userId) => api.delete(`/users/${userId}`),
+  
+  // Get usernames by IDs
+  getUsernames: (userIds) => api.post('/users/getUsersNames', userIds)
+};
 
 export default api;
