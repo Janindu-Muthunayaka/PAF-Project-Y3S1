@@ -17,7 +17,7 @@ import {
 import { motion, AnimatePresence } from 'framer-motion';
 import { useUser } from '../../context/ish/UserContext';
 import { usePost } from '../../context/ish/PostContext';
-import { commentService,replyService,reactionService } from '../../services/ish/api';
+import { commentService,replyService,reactionService,userService } from '../../services/ish/api';
 import Avatar from './ui/Avatar';
 import Badge from './ui/Badge';
 
@@ -82,6 +82,32 @@ const PostItem = ({ post }) => {
   
     fetchReactions();
   }, [post.id, user.id]);
+
+// User data loading
+const [userData, setUserData] = useState(null);
+const [isLoading, setIsLoading] = useState(true);
+
+useEffect(() => {
+  const fetchUserData = async () => {
+    try {
+      setIsLoading(true);
+      const response = await userService.getUserById(post.userId);
+      console.log('User data fetched:', response.data); // Debug log
+      setUserData(response.data);
+    } catch (error) {
+      console.error('Failed to fetch user data', error);
+      setUserData(null);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  if (post && post.userId) {
+    fetchUserData();
+  }
+}, [post.userId]);
+// End of user data loading
+
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -219,15 +245,7 @@ const PostItem = ({ post }) => {
     }
     setConfirmDelete(false);
   };
-  const getUserForPostId = async (postUserId) => {
-    try {
-      const response = await api.getUserById(postUserId);
-      return response.data;
-    } catch (error) {
-      console.error("Error fetching user:", error);
-      return null;
-    }
-  };
+ 
   
 
   return (
@@ -276,7 +294,9 @@ const PostItem = ({ post }) => {
           />
           <div>
             <div className="flex items-center space-x-2">
-              <h3 className="text-white font-semibold text-base" >{"get by user dhaala hadhanna"}</h3>
+              <h3 className="text-white font-semibold text-base" >{userData?.firstName || userData?.lastName 
+    ? `${userData?.firstName ?? ""} ${userData?.lastName ?? ""}`.trim() 
+    : "Unknown User"}</h3>
               {post.isPinned && (
                 <Badge 
                   variant="primary"
