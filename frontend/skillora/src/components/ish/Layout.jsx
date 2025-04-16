@@ -86,6 +86,13 @@ const Layout = ({ children }) => {
     { path: '/network', icon: <FiUsers className="w-5 h-5" />, text: 'Network' },
   ];
 
+  //remove session storage when logging out
+
+  const handleSignOut = () => {
+    sessionStorage.removeItem('userData'); 
+    navigate('/login'); 
+  };
+
   return (
     <div className="min-h-screen bg-[var(--dark-bg)] ">
       {/* Navigation Bar */}
@@ -199,8 +206,8 @@ const Layout = ({ children }) => {
                   <div className="absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-[var(--dark-surface)] ring-1 ring-black ring-opacity-5 z-50">
                     <div className="py-1 border-b border-[var(--dark-border)]">
                       <div className="px-4 py-3">
-                        <p className="text-sm leading-5 font-medium text-white">{user.displayName}</p>
-                        <p className="text-xs leading-4 text-gray-400">@{user.username}</p>
+                        <p className="text-sm leading-5 font-medium text-white">{`${user.firstName} ${user.lastName}`}</p>
+                        <p className="text-xs leading-4 text-gray-400">@{user.userName}</p>
                       </div>
                     </div>
                     
@@ -227,7 +234,10 @@ const Layout = ({ children }) => {
                     <div className="py-1 border-t border-[var(--dark-border)]">
                       <button
                         className="flex w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-[var(--dark-surface-light)] hover:text-white"
-                        onClick={() => setShowUserMenu(false)}
+                        onClick={() => {
+                          setShowUserMenu(false);
+                          handleSignOut();
+                        }}
                       >
                         <FiLogOut className="mr-3 h-5 w-5 text-gray-400" />
                         Sign out
