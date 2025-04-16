@@ -7,12 +7,17 @@ import com.skillora.app.model.dto.PostRequest;
 import com.skillora.app.model.dto.PostResponse;
 import com.skillora.app.service.Ish.PostService;
 
+import jakarta.servlet.http.HttpSession;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.multipart.MultipartFile;
+
 
 
 import java.util.List;
@@ -25,27 +30,28 @@ public class PostController {
      @Autowired
     private PostService postService;
     
-    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<PostResponse> createPost(
-            @RequestPart(value = "post", required = true) String postRequestJson,
-            @RequestPart(value = "files", required = false) List<MultipartFile> files) {
-        try {
-            // Configure ObjectMapper to ignore unknown properties
-            ObjectMapper objectMapper = new ObjectMapper();
-            objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-            objectMapper.registerModule(new JavaTimeModule()); // For handling LocalDateTime
-            
-            PostRequest postRequest = objectMapper.readValue(postRequestJson, PostRequest.class);
-            
-            // For now, we'll use a dummy user ID
-            String userId = "dummy-user-id";
-            PostResponse createdPost = postService.createPost(postRequest, files, userId);
-            return new ResponseEntity<>(createdPost, HttpStatus.CREATED);
-        } catch (Exception e) {
-            e.printStackTrace(); // Add this for better debugging
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+    @PostMapping("/{id}")  // Add PathVariable mapping
+public ResponseEntity<PostResponse> createPost(
+        @PathVariable String id,  // Extract userId from URL
+        @RequestPart(value = "post", required = true) String postRequestJson,
+        @RequestPart(value = "files", required = false) List<MultipartFile> files) {
+    try {
+        // Configure ObjectMapper to ignore unknown properties
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        objectMapper.registerModule(new JavaTimeModule()); // For handling LocalDateTime
+
+        PostRequest postRequest = objectMapper.readValue(postRequestJson, PostRequest.class);
+
+        // Now pass 'id' from PathVariable instead of 'userId'
+        PostResponse createdPost = postService.createPost(postRequest, files, id);
+        return new ResponseEntity<>(createdPost, HttpStatus.CREATED);
+    } catch (Exception e) {
+        e.printStackTrace(); // Add this for better debugging
+        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
+}
+
     
     @GetMapping("/{id}")
     public ResponseEntity<PostResponse> getPostById(@PathVariable String id) {

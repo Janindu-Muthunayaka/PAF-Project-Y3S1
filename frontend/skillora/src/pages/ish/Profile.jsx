@@ -4,31 +4,42 @@ import { FiEdit, FiSettings, FiBookOpen, FiCode, FiGrid, FiBookmark } from 'reac
 import { motion } from 'framer-motion';
 import { useUser } from '../../context/ish/UserContext';
 import { postService } from '../../services/ish/api';
+import { userService } from '../../services/ish/api';  // Importing the userService
 import PostList from '../../components/ish/PostList';
 import Avatar from '../../components/ish/ui/Avatar';
 import Button from '../../components/ish/ui/Button';
 
 const Profile = () => {
   const { userId } = useParams();
+  console.log("User ID:", userId);
   const { user } = useUser();
   const [posts, setPosts] = useState([]);
   const [pinnedPosts, setPinnedPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('posts');
+  const [profileData, setProfileData] = useState(null);  // New state to hold user profile data
+  const [followersCount, setFollowersCount] = useState(0);  // State to hold follower count
+  const [followingCount, setFollowingCount] = useState(0);  // State to hold following count
 
   useEffect(() => {
     const fetchUserPosts = async () => {
       try {
         setLoading(true);
-        const [postsResponse, pinnedPostsResponse] = await Promise.all([
+        const [postsResponse, pinnedPostsResponse, userResponse, followersResponse, followingResponse] = await Promise.all([
           postService.getUserPosts(userId),
-          postService.getUserPinnedPosts(userId)
+          postService.getUserPinnedPosts(userId),
+          userService.getUserById(userId),  // Fetching user details by ID
+          userService.getFollowers(userId),  // Fetching followers count
+          userService.getUsernames([userId])  // Fetching following count (or use another endpoint if needed)
         ]);
-        
+
         setPosts(postsResponse.data);
         setPinnedPosts(pinnedPostsResponse.data);
+        setProfileData(userResponse.data);  // Setting user details
+        setFollowersCount(followersResponse.data.length);  // Set followers count
+        setFollowingCount(followingResponse.data.length);  // Set following count
       } catch (error) {
-        console.error('Error fetching user posts:', error);
+        console.error('Error fetching user data:', error);
       } finally {
         setLoading(false);
       }
@@ -52,13 +63,13 @@ const Profile = () => {
         <div className="p-8 pt-4 relative z-10">
           <div className="flex flex-col sm:flex-row items-center sm:items-end gap-6">
             <div className="flex-shrink-0">
-              <Avatar name={user.displayName} size="2xl" className="profile-avatar" />
+              <Avatar name={profileData?.displayName || "User"} size="2xl" className="profile-avatar" />
             </div>
             <div className="flex-1 text-center sm:text-left">
-              <h1 className="text-3xl font-bold text-white mt-2">{user.displayName}</h1>
-              <p className="text-gray-400">@{user.username}</p>
+              <h1 className="text-3xl font-bold text-white mt-2">{profileData?.displayName || "User"}</h1>
+              <p className="text-gray-400">@{profileData?.username || "Username"}</p>
               <p className="text-gray-300 mt-2 max-w-2xl">
-                Passionate developer and educator sharing knowledge about programming and technology.
+                {profileData?.bio || "Passionate developer and educator sharing knowledge about programming and technology."}
               </p>
             </div>
             {isCurrentUser && (
@@ -78,18 +89,18 @@ const Profile = () => {
               </div>
             )}
           </div>
-          
+
           <div className="profile-stats">
             <div className="profile-stat">
-              <div className="profile-stat-value">0</div>
+              <div className="profile-stat-value">{posts.length}</div>
               <div className="profile-stat-label">Posts</div>
             </div>
             <div className="profile-stat">
-              <div className="profile-stat-value">0</div>
+              <div className="profile-stat-value">{followersCount}</div>
               <div className="profile-stat-label">Followers</div>
             </div>
             <div className="profile-stat">
-              <div className="profile-stat-value">0</div>
+              <div className="profile-stat-value">{followingCount}</div>
               <div className="profile-stat-label">Following</div>
             </div>
             <div className="profile-stat">
@@ -162,53 +173,6 @@ const Profile = () => {
           ) : (
             <PostList posts={posts} />
           )}
-        </div>
-      )}
-
-      {activeTab === 'learning' && (
-        <div className="card">
-          <div className="p-8 text-center">
-            <svg className="w-16 h-16 text-gray-500 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-            </svg>
-            <h3 className="text-xl font-semibold text-white mb-2">No learning plans yet</h3>
-            <p className="text-gray-400 mb-6">
-              {isCurrentUser
-                ? "You haven't created any learning plans yet."
-                : "This user hasn't created any learning plans yet."}
-            </p>
-            {isCurrentUser && (
-              <Button
-                variant="primary"
-                to="/create-learning-plan"
-              >
-                Create Learning Plan
-              </Button>
-            )}
-          </div>
-        </div>
-      )}
-
-      {activeTab === 'skills' && (
-        <div className="card">
-          <div className="p-8 text-center">
-            <svg className="w-16 h-16 text-gray-500 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
-            </svg>
-            <h3 className="text-xl font-semibold text-white mb-2">No skills added yet</h3>
-            <p className="text-gray-400 mb-6">
-              {isCurrentUser
-                ? "You haven't added any skills to your profile yet."
-                : "This user hasn't added any skills to their profile yet."}
-            </p>
-            {isCurrentUser && (
-              <Button
-                variant="primary"
-              >
-                Add Skills
-              </Button>
-            )}
-          </div>
         </div>
       )}
     </div>

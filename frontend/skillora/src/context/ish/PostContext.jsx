@@ -22,10 +22,10 @@ export const PostProvider = ({ children }) => {
     }
   };
 
-  const createPost = async (postData, files) => {
+  const createPost = async (id,postData, files) => {
     try {
       setLoading(true);
-      const response = await postService.createPost(postData, files);
+      const response = await postService.createPost(id,postData, files);
       setPosts([response.data, ...posts]);
       return response.data;
     } catch (err) {
