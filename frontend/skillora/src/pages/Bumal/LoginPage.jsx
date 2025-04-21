@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { userService } from '../../services/ish/api';
+import { sessionId } from '../../services/ish/api';
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
@@ -16,20 +17,24 @@ const LoginPage = () => {
       setError('Please fill in both email and password');
       return;
     }
-
+  
     const loginDto = {
       email,
       password,
     };
-
+  
     try {
       const response = await userService.login(loginDto);
-
-      // Check if response contains user data
+  
       if (response.data) {
-        // Store user data in sessionStorage
+        // 🔐 Optional: store auth data if needed
         sessionStorage.setItem('userData', JSON.stringify(response.data));
-        navigate('/'); // Redirect to dashboard or main page after successful login
+  
+        // ✅ Now fetch the current session user
+        const sessionUser = await sessionId.getUserData();
+  
+        // ✅ Redirect to their profile page with real ID
+        navigate(`/profile/${sessionUser.id}`);
       } else {
         setError('Invalid email or password');
       }

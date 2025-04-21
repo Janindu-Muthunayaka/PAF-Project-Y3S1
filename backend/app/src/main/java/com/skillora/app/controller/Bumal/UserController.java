@@ -232,4 +232,39 @@ public class UserController {
         return ResponseEntity.ok("Logout successful");
     }
 
+
+    @GetMapping("/session/user")
+    public ResponseEntity<?> getSessionUser() {
+        ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
+        HttpSession session = attr.getRequest().getSession(false);
+    
+        if (session == null || session.getAttribute("userId") == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not logged in");
+        }
+    
+        String userId = (String) session.getAttribute("userId");
+        Optional<User> user = userService.findById(userId); // make sure this takes a String
+    
+        if (user.isPresent()) {
+            return ResponseEntity.ok(user.get());
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
+        }
+    }
+
+
+    @GetMapping("/myFollowing/{userId}")
+public ResponseEntity<?> myFollowing(@PathVariable String userId) {
+    try {
+        List<User> following = userService.getFollowing(userId);
+        return ResponseEntity.ok(following);
+    } catch (Exception e) {
+        e.printStackTrace(); // Debug info
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error retrieving following list");
+    }
+}
+
+    
+
+
 }
