@@ -442,6 +442,30 @@ const Home = () => {
                   Follow
                 </Button>
               </li>
+              <li className="flex items-center justify-between">
+                <div className="flex items-center">
+                  <Avatar name="Janindu M" size="md" className="mr-3 mb-4" />
+                  <div>
+                    <Link to="/profile/1" className="font-medium text-white hover:underline">Janindu M</Link>
+                    <p className="text-gray-400 text-xs">CEO & Tech Billonaire Data Scientist</p>
+                  </div>
+                </div>
+                <Button variant="outline" size="xs"  className="mb-4">
+                  Follow
+                </Button>
+              </li>
+              <li className="flex items-center justify-between">
+                <div className="flex items-center">
+                  <Avatar name="Erandi R" size="md" className="mr-3 mb-4" />
+                  <div>
+                    <Link to="/profile/1" className="font-medium text-white hover:underline">Erandi R</Link>
+                    <p className="text-gray-400 text-xs">Senior Finance Executive</p>
+                  </div>
+                </div>
+                <Button variant="outline" size="xs"  className="mb-4">
+                  Follow
+                </Button>
+              </li>
             </ul>
           </div>
         </div>
