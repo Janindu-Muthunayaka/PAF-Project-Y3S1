@@ -78,7 +78,7 @@ public class PlanController {
 
 
     //Delete a plan
-    //Postmann: DELETE http://localhost:8080/plans/645456456456456456456456
+    //Postmann: DELETE http://localhost:8080/plans/680a9a14d30e90329b8e6977
     @DeleteMapping("/plans/{id}")
     public ResponseEntity<?> deleteById(@PathVariable("id") String id) {
        try{
