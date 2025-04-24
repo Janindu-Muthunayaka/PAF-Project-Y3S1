@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.skillora.app.model.Nadee.Plans;
 import com.skillora.app.repository.Nadee.PlanRepository;
+import com.skillora.app.service.Nadee.PlanService;
+import com.skillora.app.utility.PlanCollectionException;
 
 @RestController
 public class PlanController {
@@ -24,16 +26,15 @@ public class PlanController {
     @Autowired
     private PlanRepository planRepo;
 
+    @Autowired
+    private PlanService planService;
+
     //Read all plans
     //Postmann: GET http://localhost:8080/plans
     @GetMapping("/plans")
     public ResponseEntity<?> getAllPlans() {
-        List<Plans> plans = planRepo.findAll();
-        if (plans.size() > 0) {
-            return new ResponseEntity<List<Plans>>(plans,HttpStatus.OK);
-        } else {
-            return new ResponseEntity<String>("No plans available",HttpStatus.NOT_FOUND);
-        }
+        List<Plans> plans = planService.getAllPlans();
+        return new ResponseEntity<>(plans, plans.size() > 0 ? HttpStatus.OK : HttpStatus.NOT_FOUND);
     }
 
 
@@ -42,11 +43,11 @@ public class PlanController {
     @PostMapping("/plans")
     public ResponseEntity<?> createPlan(@RequestBody Plans plan){
         try {
-            plan.setCreatedAt(new Date(System.currentTimeMillis()));
+            planService.createPlan(plan);
             planRepo.save(plan);
             return new ResponseEntity<Plans>(plan,HttpStatus.OK);
-         } catch (Exception e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+         } catch (PlanCollectionException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.UNPROCESSABLE_ENTITY);
          }
     }
 
@@ -55,40 +56,23 @@ public class PlanController {
     //Postmann: GET http://localhost:8080/plans/645456456456456456456456
     @GetMapping("/plans/{id}")
     public ResponseEntity<?> getSinglePlan(@PathVariable("id") String id) {
-        Optional<Plans> planOptional = planRepo.findById(id);
-        if (planOptional.isPresent()) {
-            return new ResponseEntity<>(planOptional.get(), HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>("No plan available with id" +id, HttpStatus.NOT_FOUND);
+        try{
+            return new ResponseEntity<>(planService.getSinglePlan(id), HttpStatus.OK);
+        }catch(Exception e){
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         }
+        
     }
 
-
     //Update a plan
-    //Postmann: PUT http://localhost:8080/plans/645456456456456456456456
+    //postmann: PUT http://localhost:8080/plans/680a8e9c8c5b732e2ef53f06
     @PutMapping("/plans/{id}")
     public ResponseEntity<?> updateById(@PathVariable("id") String id, @RequestBody Plans plan) {
-        Optional<Plans> planOptional = planRepo.findById(id);
-        if (planOptional.isPresent()) {
-            Plans planToSave = planOptional.get();
-            planToSave.setName(plan.getName());
-            planToSave.setDescription(plan.getDescription() != null ? plan.getDescription() : planToSave.getDescription()); 
-            planToSave.setDueDate(plan.getDueDate());
-            planToSave.setCompleted(plan.getCompleted() != null ? plan.getCompleted() : planToSave.getCompleted());
-            planToSave.setUpdatedAt(new Date(System.currentTimeMillis()));
-
-            // Update resource and video URLs if provided
-        if (plan.getResourceFileUrls() != null) {
-            planToSave.setResourceFileUrls(plan.getResourceFileUrls());
-        }
-        if (plan.getVideoFileUrls() != null) {
-            planToSave.setVideoFileUrls(plan.getVideoFileUrls());
-        }
-
-            planRepo.save(planToSave);
-            return new ResponseEntity<>(planToSave, HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>("No plan available with id" +id, HttpStatus.NOT_FOUND);
+        try {
+            planService.updatePlan(id, plan);
+            return new ResponseEntity<>("Update to do with id" +id, HttpStatus.OK);
+        } catch (PlanCollectionException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         }
     }
 
@@ -98,10 +82,10 @@ public class PlanController {
     @DeleteMapping("/plans/{id}")
     public ResponseEntity<?> deleteById(@PathVariable("id") String id) {
        try{
-        planRepo.deleteById(id);
-        return new ResponseEntity<>("Succesfully deleted with id"+id, HttpStatus.OK);
-       } catch (Exception e) {
-        return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+            planService.deletePlanById(id);
+            return new ResponseEntity<>("Succesfully deleted with id"+id, HttpStatus.OK);
+       } catch (PlanCollectionException e) {
+           return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
        }
     }
 
