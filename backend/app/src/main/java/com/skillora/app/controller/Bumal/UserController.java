@@ -45,6 +45,23 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Email already exists");
         }
 
+        // Initialize required fields if null
+        if (user.getBio() == null) {
+            user.setBio("");
+        }
+        if (user.getFollowers() == null) {
+            user.setFollowers(new ArrayList<>());
+        }
+        if (user.getFollowing() == null) {
+            user.setFollowing(new ArrayList<>());
+        }
+        if (user.getProfilePicURL() == null) {
+            user.setProfilePicURL("");
+        }
+        if (user.getUserType() == null) {
+            user.setUserType("User");
+        }
+
         // Register the user
         User registeredUser = userService.register(user);
 
@@ -68,9 +85,12 @@ public class UserController {
         User newUser = new User();
         newUser.setUserName(gUser.getUserName());
         newUser.setEmail(gUser.getEmail());
-        newUser.setProfilePicURL(gUser.getProfileImageUrl());
+        newUser.setProfilePicURL(gUser.getProfileImageUrl() != null ? gUser.getProfileImageUrl() : "");
         newUser.setFirstName(gUser.getName());
         newUser.setUserType("User");
+        newUser.setBio(gUser.getBio() != null ? gUser.getBio() : "");
+        newUser.setFollowers(new ArrayList<>());
+        newUser.setFollowing(new ArrayList<>());
 
         // Register the user
         User registeredUser = userService.register(newUser);
@@ -264,7 +284,16 @@ public ResponseEntity<?> myFollowing(@PathVariable String userId) {
     }
 }
 
-    
-
+    @PostMapping("/updateAllUsersWithBio")
+    public ResponseEntity<?> updateAllUsersWithBio() {
+        List<User> allUsers = userService.findAllUsers();
+        for (User user : allUsers) {
+            if (user.getBio() == null) {
+                user.setBio("");
+                userService.updateUser(user);
+            }
+        }
+        return ResponseEntity.ok("All users updated with bio field");
+    }
 
 }
