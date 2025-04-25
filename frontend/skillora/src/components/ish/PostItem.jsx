@@ -314,7 +314,7 @@ useEffect(() => {
                 </Badge>
               )}
             </div>
-            <p className="text-gray-400 text-sm ">{formatDate(post.createdAt)}</p>
+            <p className="text-gray-400 text-sm pr-18">{formatDate(post.createdAt)}</p>
           </div>
         </div>
         
