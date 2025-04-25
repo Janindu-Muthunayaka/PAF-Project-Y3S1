@@ -18,6 +18,8 @@ import NotFound from './pages/ish/NotFound';
 import LoginPage from './pages/Bumal/LoginPage';
 import RegisterPage from './pages/Bumal/Registerpage';
 import Plans from './pages/Nadee/Plans';  
+import ViewPlans from './pages/Nadee/ViewPlans'; // Import ViewPlans
+import UpdatePlan from './pages/Nadee/UpdatePlan'; // Import UpdatePlan
 import './App.css';
 
 // Protected route component
@@ -86,14 +88,31 @@ function App() {
                 </ProtectedRoute>
               } />
 
-            <Route path="/learning-plans/create" element={
-              <ProtectedRoute>
-                <Layout>
-                  <Plans />
-                </Layout>
-              </ProtectedRoute>
-            } />
-            
+              <Route path="/learning-plans/create" element={
+                <ProtectedRoute>
+                  <Layout>
+                    <Plans />
+                  </Layout>
+                </ProtectedRoute>
+              } />
+
+              <Route path="/learning-plans/view" element={
+                <ProtectedRoute>
+                  <Layout>
+                    <ViewPlans />
+                  </Layout>
+                </ProtectedRoute>
+              } />
+
+              {/* Add the route for UpdatePlan */}
+              <Route path="/update-plan/:planId" element={
+                <ProtectedRoute>
+                  <Layout>
+                    <UpdatePlan />
+                  </Layout>
+                </ProtectedRoute>
+              } />
+              
               <Route path="/network" element={
                 <ProtectedRoute>
                   <Layout>

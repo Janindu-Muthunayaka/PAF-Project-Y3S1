@@ -1,57 +1,38 @@
 import React, { useState } from 'react';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate
 
 const CreatePlan = () => {
   const [formData, setFormData] = useState({
     name: '',
     description: '',
     dueDate: '',
-    completed: '',
-    resourceFileUrls: [],
-    videoFileUrls: [],
+    completed: false,
   });
+
+  const navigate = useNavigate(); // Initialize useNavigate
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
-  };
-
-  const handleResourceFiles = (e) => {
-    setFormData(prev => ({ ...prev, resourceFileUrls: Array.from(e.target.files) }));
-  };
-
-  const handleVideoFiles = (e) => {
-    setFormData(prev => ({ ...prev, videoFileUrls: Array.from(e.target.files) }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const payload = {
-      ...formData,
-      completed: formData.completed === 'Completed',
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
-
-    const form = new FormData();
-    form.append('data', JSON.stringify(payload));
-
-    formData.resourceFileUrls.forEach(file => form.append('resourceFiles', file));
-    formData.videoFileUrls.forEach(file => form.append('videoFiles', file));
-
     try {
-      const res = await fetch('http://localhost:8080/api/plans', {
-        method: 'POST',
-        body: form,
+      const response = await axios.post('http://localhost:8080/api/plans', formData, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
       });
-      if (res.ok) {
+      if (response.status === 200 || response.status === 201) {
         alert('Plan created successfully!');
-      } else {
-        alert('Failed to create plan');
+        navigate('/learning-plans/view'); // Redirect to ViewPlans
       }
-    } catch (err) {
-      console.error(err);
-      alert('Something went wrong');
+    } catch (error) {
+      console.error('Error creating plan:', error);
+      alert('Failed to create plan.');
     }
   };
 
@@ -70,7 +51,6 @@ const CreatePlan = () => {
             required
           />
         </div>
-
         <div>
           <label className="block font-semibold">Description</label>
           <textarea
@@ -82,7 +62,6 @@ const CreatePlan = () => {
             required
           />
         </div>
-
         <div>
           <label className="block font-semibold">Due Date</label>
           <input
@@ -94,7 +73,6 @@ const CreatePlan = () => {
             required
           />
         </div>
-
         <div>
           <label className="block font-semibold">Status</label>
           <select
@@ -104,35 +82,10 @@ const CreatePlan = () => {
             className="w-full p-2 border rounded-lg"
             required
           >
-            <option value="">Select status</option>
-            <option value="Not completed">Not completed</option>
-            <option value="Completed">Completed</option>
+            <option value={false}>Not completed</option>
+            <option value={true}>Completed</option>
           </select>
         </div>
-
-        <div>
-          <label className="block font-semibold mb-2">Resource Files</label>
-          <input
-            type="file"
-            accept=".pdf,.doc,.docx"
-            multiple
-            onChange={handleResourceFiles}
-            className="w-full border rounded-lg p-2"
-          />
-          <p className="text-sm text-gray-500 mt-1">Drag and drop your PDF, DOC here.</p>
-        </div>
-
-        <div>
-          <label className="block font-semibold mb-2">Video Files</label>
-          <input
-            type="file"
-            accept="video/*"
-            multiple
-            onChange={handleVideoFiles}
-            className="w-full border rounded-lg p-2"
-          />
-        </div>
-
         <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
           Create Plan
         </button>
