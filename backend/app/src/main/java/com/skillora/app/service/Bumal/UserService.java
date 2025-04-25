@@ -99,4 +99,22 @@ public class UserService {
         return "Error";
     }
 
+
+    public List<User> getFollowing(String userId) {
+        Optional<User> userOptional = userRepository.findById(userId);
+        List<User> followingUsers = new ArrayList<>();
+    
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+            for (String followingId : user.getFollowing()) {
+                userRepository.findById(followingId).ifPresent(followingUsers::add);
+            }
+        } else {
+            throw new RuntimeException("User not found with ID: " + userId);
+        }
+    
+        return followingUsers;
+    }
+    
+
 }

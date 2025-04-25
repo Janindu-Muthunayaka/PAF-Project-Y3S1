@@ -12,4 +12,5 @@ public class GoogleSignUpDto {
     private String userName;
     private String email;
     private String profileImageUrl;
+    private String bio = ""; // Initialize with empty string
 }
