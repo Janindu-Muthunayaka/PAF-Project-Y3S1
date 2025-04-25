@@ -35,22 +35,27 @@ const LearningPlans = () => {
 
   return (
     <div className="max-w-5xl mx-auto">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">Learning Plans</h1>
-        <button className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
-          <FiPlus className="mr-2" />
-          Create Plan
-        </button>
-      </div>
+    <div className="flex justify-between items-center mb-6">
+      <h1 className="text-2xl font-bold">Learning Plans</h1>
+      <Link
+        to="/learning-plans/create"
+        className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+      >
+        <FiPlus className="mr-2" />
+        Create Plan
+      </Link>
+    </div>
       
       <div className="bg-white rounded-lg shadow p-6 mb-8">
         <h2 className="text-xl font-semibold mb-4">My Learning Plans</h2>
         <div className="py-8 text-center text-gray-500">
-          <p>You haven't created any learning plans yet.</p>
-          <button className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
-            Create Your First Learning Plan
-          </button>
-        </div>
+      <p>You haven't created any learning plans yet.</p>
+      <Link to="/learning-plans/create">
+        <button className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
+          Create Your First Learning Plan
+        </button>
+      </Link>
+      </div>  
       </div>
       
       <div className="bg-white rounded-lg shadow p-6">
