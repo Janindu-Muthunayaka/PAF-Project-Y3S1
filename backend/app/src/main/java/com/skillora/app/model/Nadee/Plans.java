@@ -31,6 +31,8 @@ public class Plans {
     private List<String> resourceFileUrls; // e.g., PDF, DOC, etc.
     private List<String> videoFileUrls;    // e.g., MP4, AVI, etc.
 
+    // Constructor already provided by @AllArgsConstructor annotation
+
     // Getters and setters
     public String getId() {
         return id;

@@ -22,11 +22,12 @@ public class PlanServiceImpl implements PlanService {
 
     @Override
     public void createPlan(Plans plans) throws PlanCollectionException {
-        Optional<Plans>planOptional = planRepo.findByName(plans.getName());
-        if(planOptional.isPresent()){
+        Optional<Plans> planOptional = planRepo.findByName(plans.getName());
+        if (planOptional.isPresent()) {
             throw new PlanCollectionException(PlanCollectionException.PlanAllreadyExists());
-        }else {
+        } else {
             plans.setCreatedAt(new Date(System.currentTimeMillis()));
+            plans.setUpdatedAt(new Date(System.currentTimeMillis()));
             planRepo.save(plans);
         }
     }
@@ -47,12 +48,12 @@ public class PlanServiceImpl implements PlanService {
 
     @Override
     public Plans getSinglePlan(String id) throws PlanCollectionException {
-       Optional<Plans> optionalPlans = planRepo.findById(id);
-       if(!optionalPlans.isPresent()){
-        throw new PlanCollectionException(PlanCollectionException.NotFoundException(id));
-       }else{
-        return optionalPlans.get();
-       }
+        Optional<Plans> optionalPlans = planRepo.findById(id);
+        if (!optionalPlans.isPresent()) {
+            throw new PlanCollectionException(PlanCollectionException.NotFoundException(id));
+        } else {
+            return optionalPlans.get();
+        }
     }
 
 
@@ -72,8 +73,9 @@ public class PlanServiceImpl implements PlanService {
             updateToPlan.setDescription(plans.getDescription());
             updateToPlan.setDueDate(plans.getDueDate());
             updateToPlan.setUpdatedAt(new Date(System.currentTimeMillis()));
-            updateToPlan.setResourceFileUrls(plans.getResourceFileUrls());
-            updateToPlan.setVideoFileUrls(plans.getVideoFileUrls());
+            
+            updateToPlan.setResourceFileUrls(plans.getResourceFileUrls());  // Single resource file URL
+            updateToPlan.setVideoFileUrls(plans.getVideoFileUrls());        // Single video file URL
             
             planRepo.save(updateToPlan);
 
