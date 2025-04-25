@@ -17,6 +17,7 @@ import PostDetail from './pages/ish/PostDetail';
 import NotFound from './pages/ish/NotFound';
 import LoginPage from './pages/Bumal/LoginPage';
 import RegisterPage from './pages/Bumal/Registerpage';
+import Plans from './pages/Nadee/Plans';  
 import './App.css';
 
 // Protected route component
@@ -84,6 +85,15 @@ function App() {
                   </Layout>
                 </ProtectedRoute>
               } />
+
+            <Route path="/learning-plans/create" element={
+              <ProtectedRoute>
+                <Layout>
+                  <Plans />
+                </Layout>
+              </ProtectedRoute>
+            } />
+            
               <Route path="/network" element={
                 <ProtectedRoute>
                   <Layout>
