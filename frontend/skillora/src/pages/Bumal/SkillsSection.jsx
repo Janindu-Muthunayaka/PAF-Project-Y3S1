@@ -7,6 +7,8 @@ const SkillsSection = ({ userId: propUserId, isCurrentUser }) => {
   const [showModal, setShowModal] = useState(false);
   const [newSkill, setNewSkill] = useState({ skillName: '', description: '' });
   const [editingSkill, setEditingSkill] = useState(null);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [skillToDelete, setSkillToDelete] = useState(null);
   const userId = propUserId || sessionStorage.getItem("sessionId"); // ✅ fallback to session if not passed
 
   const fetchSkills = async () => {
@@ -43,12 +45,22 @@ const SkillsSection = ({ userId: propUserId, isCurrentUser }) => {
     setShowModal(true);
   };
 
-  const handleDeleteSkill = async (skillId) => {
+  const handleDeleteClick = (skill) => {
+    setSkillToDelete(skill);
+    setShowDeleteConfirm(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!skillToDelete) return;
+
     try {
-      await deleteSkill(skillId); // ✅ skillId passed correctly
+      await deleteSkill(skillToDelete.id);
       fetchSkills();
     } catch (err) {
       console.error("Failed to delete skill", err);
+    } finally {
+      setShowDeleteConfirm(false);
+      setSkillToDelete(null);
     }
   };
 
@@ -97,7 +109,7 @@ const SkillsSection = ({ userId: propUserId, isCurrentUser }) => {
                     <FiEdit2 />
                   </button>
                   <button
-                    onClick={() => handleDeleteSkill(skill.id)} // ✅ use id
+                    onClick={() => handleDeleteClick(skill)}
                     className="text-red-500 hover:text-red-400"
                     title="Delete skill"
                   >
@@ -148,6 +160,36 @@ const SkillsSection = ({ userId: propUserId, isCurrentUser }) => {
                 className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition"
               >
                 {editingSkill ? 'Update' : 'Add'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showDeleteConfirm && (
+        <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex justify-center items-center z-50">
+          <div className="bg-gray-900 border border-gray-700 rounded-xl p-6 w-full max-w-md shadow-xl">
+            <h2 className="text-xl font-semibold text-white mb-4 text-center">
+              Delete Skill
+            </h2>
+            <p className="text-gray-400 text-center mb-6">
+              Are you sure you want to delete the skill "{skillToDelete?.skillName}"?
+            </p>
+            <div className="flex justify-end gap-3">
+              <button
+                onClick={() => {
+                  setShowDeleteConfirm(false);
+                  setSkillToDelete(null);
+                }}
+                className="px-4 py-2 bg-gray-700 text-white rounded-md hover:bg-gray-600 transition"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleDeleteConfirm}
+                className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition"
+              >
+                Delete
               </button>
             </div>
           </div>
