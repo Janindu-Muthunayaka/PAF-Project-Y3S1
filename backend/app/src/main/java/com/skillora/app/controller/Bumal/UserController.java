@@ -45,6 +45,23 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Email already exists");
         }
 
+        // Initialize required fields if null
+        if (user.getBio() == null) {
+            user.setBio("");
+        }
+        if (user.getFollowers() == null) {
+            user.setFollowers(new ArrayList<>());
+        }
+        if (user.getFollowing() == null) {
+            user.setFollowing(new ArrayList<>());
+        }
+        if (user.getProfilePicURL() == null) {
+            user.setProfilePicURL("");
+        }
+        if (user.getUserType() == null) {
+            user.setUserType("User");
+        }
+
         // Register the user
         User registeredUser = userService.register(user);
 
@@ -68,9 +85,12 @@ public class UserController {
         User newUser = new User();
         newUser.setUserName(gUser.getUserName());
         newUser.setEmail(gUser.getEmail());
-        newUser.setProfilePicURL(gUser.getProfileImageUrl());
+        newUser.setProfilePicURL(gUser.getProfileImageUrl() != null ? gUser.getProfileImageUrl() : "");
         newUser.setFirstName(gUser.getName());
         newUser.setUserType("User");
+        newUser.setBio(gUser.getBio() != null ? gUser.getBio() : "");
+        newUser.setFollowers(new ArrayList<>());
+        newUser.setFollowing(new ArrayList<>());
 
         // Register the user
         User registeredUser = userService.register(newUser);
@@ -230,6 +250,50 @@ public class UserController {
         attr.getRequest().getSession().invalidate();
 
         return ResponseEntity.ok("Logout successful");
+    }
+
+
+    @GetMapping("/session/user")
+    public ResponseEntity<?> getSessionUser() {
+        ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
+        HttpSession session = attr.getRequest().getSession(false);
+    
+        if (session == null || session.getAttribute("userId") == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not logged in");
+        }
+    
+        String userId = (String) session.getAttribute("userId");
+        Optional<User> user = userService.findById(userId); // make sure this takes a String
+    
+        if (user.isPresent()) {
+            return ResponseEntity.ok(user.get());
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
+        }
+    }
+
+
+    @GetMapping("/myFollowing/{userId}")
+public ResponseEntity<?> myFollowing(@PathVariable String userId) {
+    try {
+        List<User> following = userService.getFollowing(userId);
+        return ResponseEntity.ok(following);
+    } catch (Exception e) {
+        e.printStackTrace(); // Debug info
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error retrieving following list");
+    }
+}
+
+    @PostMapping("/updateAllUsersWithBio")
+    public ResponseEntity<?> updateAllUsersWithBio() {
+        List<User> allUsers = userService.findAllUsers();
+        for (User user : allUsers) {
+            if (user.getBio() == null) {
+                user.setBio("");
+                userService.updateUser(user);
+            }
+        }
+        return ResponseEntity.ok("All users updated with bio field");
     }
 
 }
