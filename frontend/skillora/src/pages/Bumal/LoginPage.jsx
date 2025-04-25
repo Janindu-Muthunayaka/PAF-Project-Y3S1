@@ -27,8 +27,8 @@ const LoginPage = () => {
 
       // Check if response contains user data
       if (response.data) {
-        // Store user data in localStorage
-        localStorage.setItem('userData', JSON.stringify(response.data));
+        // Store user data in sessionStorage
+        sessionStorage.setItem('userData', JSON.stringify(response.data));
         navigate('/'); // Redirect to dashboard or main page after successful login
       } else {
         setError('Invalid email or password');

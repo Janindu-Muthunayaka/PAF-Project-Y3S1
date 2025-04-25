@@ -52,10 +52,10 @@ export const PostProvider = ({ children }) => {
     }
   };
 
-  const deletePost = async (id) => {
+  const deletePost = async (id, userId) => {
     try {
       setLoading(true);
-      await postService.deletePost(id);
+      await postService.deletePost(userId, id); // ✅ fix here
       setPosts(posts.filter(post => post.id !== id));
     } catch (err) {
       setError('Failed to delete post');
@@ -65,6 +65,7 @@ export const PostProvider = ({ children }) => {
       setLoading(false);
     }
   };
+  
 
   useEffect(() => {
     fetchPosts();

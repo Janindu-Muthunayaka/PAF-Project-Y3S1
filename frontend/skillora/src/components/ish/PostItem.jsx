@@ -232,9 +232,17 @@ useEffect(() => {
   };
 
   const handleConfirmDelete = async (e) => {
+  
+    //testing to be removed
+
+  console.log("in Post Item delete post with ID:", post.id);
+  console.log("in Post Item delete post User ID:", user.id);
+  console.log("Post object:", post); // ← check the full object
+
+
     e.stopPropagation();
     try {
-      await deletePost(post.id);
+      await deletePost(post.id, user.id); 
       toast.success('Post deleted successfully');
       
       if (window.location.pathname.includes(`/posts/${post.id}`)) {

@@ -35,25 +35,45 @@ export const postService = {
       },
     });
   },
-  updatePost: (id, postData, files) => {
+  updatePost: (userId, id, postData, files) => {
     const formData = new FormData();
     const postBlob = new Blob([JSON.stringify(postData)], { type: 'application/json' });
-    
+
     formData.append('post', postBlob);
-    
+
+
+    //testing to be removed
+    console.log("Updating post with ID:", id);
+    console.log("User ID:", userId);
+    console.log("Post Data:", postData);
+
+
     if (files && files.length > 0) {
-      files.forEach(file => {
-        formData.append('files', file);
-      });
+        files.forEach(file => {
+            formData.append('files', file);
+        });
     }
-    
+
     return axios.put(`${API_URL}/posts/${id}`, formData, {
       headers: {
-        'Content-Type': 'multipart/form-data',
+          'Content-Type': 'multipart/form-data',
+          'userId': userId, // Include userId as a header
       },
-    });
-  },
-  deletePost: (id) => api.delete(`/posts/${id}`),
+  });
+  
+},
+deletePost: (userId, id) => {
+  //testing to be removed
+  console.log("Updating post with ID:", id);
+  console.log("User ID:", userId);
+
+  return api.delete(`/posts/${id}`, {
+  headers: { 'userId': userId },
+  }).catch(err => {
+    console.error("Delete failed in api.js:", err);
+    throw err; // rethrow so it’s caught in the frontend try/catch
+  });
+},
 };
 
 // Category services
