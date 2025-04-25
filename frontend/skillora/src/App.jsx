@@ -1,38 +1,147 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { useState, useEffect } from 'react';
+import { UserProvider } from './context/ish/UserContext';
+import { PostProvider } from './context/ish/PostContext';
+import { ThemeProvider } from './context/ish/ThemeContext';
+import Layout from './components/ish/Layout';
+import Home from './pages/ish/Home';
+import Profile from './pages/ish/Profile';
+import Explore from './pages/ish/Explore';
+import LearningPlans from './pages/ish/LearningPlans';
+import Network from './pages/ish/Network';
+import CreatePost from './pages/ish/CreatePost';
+import EditPost from './pages/ish/EditPost';
+import PostDetail from './pages/ish/PostDetail';
+import NotFound from './pages/ish/NotFound';
+import LoginPage from './pages/Bumal/LoginPage';
+import RegisterPage from './pages/Bumal/Registerpage';
+import './App.css';
+
+// Protected route component
+const ProtectedRoute = ({ children }) => {
+  const userData = sessionStorage.getItem('userData');
+  
+  if (!userData) {
+    // Redirect to login if not authenticated
+    return <Navigate to="/login" replace />;
+  }
+  
+  return children;
+};
 
 function App() {
-  const [count, setCount] = useState(0)
+  // Check if the user is authenticated
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  
+  useEffect(() => {
+    // Check if userData exists in sessionStorage
+    const userData = sessionStorage.getItem('userData');
+    setIsAuthenticated(!!userData);
+  }, []);
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-        <p>
-conflict recoled by Nadee
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <ThemeProvider>
+      <Router>
+        <UserProvider>
+          <PostProvider>
+            <Routes>
+              {/* Public routes */}
+              <Route path="/login" element={
+                isAuthenticated ? <Navigate to="/" replace /> : <LoginPage />
+              } />
+              <Route path="/register" element={
+                isAuthenticated ? <Navigate to="/" replace /> : <RegisterPage />
+              } />
+              
+              {/* Protected routes wrapped with Layout */}
+              <Route path="/" element={
+                <ProtectedRoute>
+                  <Layout>
+                    <Home />
+                  </Layout>
+                </ProtectedRoute>
+              } />
+              <Route path="/profile/:userId" element={
+                <ProtectedRoute>
+                  <Layout>
+                    <Profile />
+                  </Layout>
+                </ProtectedRoute>
+              } />
+              <Route path="/explore" element={
+                <ProtectedRoute>
+                  <Layout>
+                    <Explore />
+                  </Layout>
+                </ProtectedRoute>
+              } />
+              <Route path="/learning-plans" element={
+                <ProtectedRoute>
+                  <Layout>
+                    <LearningPlans />
+                  </Layout>
+                </ProtectedRoute>
+              } />
+              <Route path="/network" element={
+                <ProtectedRoute>
+                  <Layout>
+                    <Network />
+                  </Layout>
+                </ProtectedRoute>
+              } />
+              <Route path="/create-post" element={
+                <ProtectedRoute>
+                  <Layout>
+                    <CreatePost />
+                  </Layout>
+                </ProtectedRoute>
+              } />
+              <Route path="/posts/:postId" element={
+                <ProtectedRoute>
+                  <Layout>
+                    <PostDetail />
+                  </Layout>
+                </ProtectedRoute>
+              } />
+              <Route path="/posts/:postId/edit" element={
+                <ProtectedRoute>
+                  <Layout>
+                    <EditPost />
+                  </Layout>
+                </ProtectedRoute>
+              } />
+              
+              {/* Not found route - also protected */}
+              <Route path="*" element={
+                <ProtectedRoute>
+                  <Layout>
+                    <NotFound />
+                  </Layout>
+                </ProtectedRoute>
+              } />
+              
+              {/* Default redirect to login */}
+              <Route path="/" element={<Navigate to="/login" replace />} />
+            </Routes>
+            <ToastContainer
+              position="bottom-right"
+              autoClose={5000}
+              hideProgressBar={false}
+              newestOnTop
+              closeOnClick
+              rtl={false}
+              pauseOnFocusLoss
+              draggable
+              pauseOnHover
+              theme="colored"
+            />
+          </PostProvider>
+        </UserProvider>
+      </Router>
+    </ThemeProvider>
+  );
 }
 
-export default App
+export default App;
