@@ -245,14 +245,25 @@ const PostDetail = () => {
     setConfirmDelete(false);
   };
 
-  const handleConfirmDelete = async () => {
+  const handleConfirmDelete = async (e) => {
+  
+    //testing to be removed
+
+  console.log("in Post Item delete post with ID:", post.id);
+  console.log("in Post Item delete post User ID:", user.id);
+  console.log("Post object:", post); // ← check the full object
+
+
+    e.stopPropagation();
     try {
-      await deletePost(postId);
+      await deletePost(post.id, user.id); 
       toast.success('Post deleted successfully');
-      navigate('/');
+      
+      if (window.location.pathname.includes(`/posts/${post.id}`)) {
+        navigate('/');
+      }
     } catch (error) {
       toast.error('Failed to delete post');
-      console.error('Failed to delete post:', error);
     }
     setConfirmDelete(false);
   };
