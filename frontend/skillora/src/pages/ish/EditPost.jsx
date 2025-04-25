@@ -6,11 +6,12 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { usePost } from '../../context/ish/PostContext';
 import { postService, categoryService } from '../../services/ish/api';
 import { BsPinAngle } from 'react-icons/bs';
+import { useUser } from '../../context/ish/UserContext';
 
 const EditPost = () => {
   const navigate = useNavigate();
   const { postId } = useParams();
-  
+  const { user } = useUser();
   const [post, setPost] = useState(null);
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
@@ -185,10 +186,10 @@ const EditPost = () => {
       
       // If we're keeping existing media and not adding new files, just update post data
       if (keepExistingMedia && files.length === 0) {
-        await postService.updatePost(postId, postData, []);
+        await postService.updatePost(user.id,postId, postData, []);
       } else {
         // Otherwise update with new files
-        await postService.updatePost(postId, postData, files);
+        await postService.updatePost(user.id,postId, postData, files);
       }
       
       toast.success('Post updated successfully!');

@@ -90,6 +90,9 @@ public class PostService {
         Post post = postRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Post not found with id: " + id));
         
+        System.out.println("The post service has been called");
+
+
         // Check if the user is the owner of the post
         if (!post.getUserId().equals(userId)) {
             throw new RuntimeException("You are not authorized to update this post");
