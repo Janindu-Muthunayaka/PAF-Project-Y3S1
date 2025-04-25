@@ -161,7 +161,7 @@ const Layout = ({ children }) => {
                       </Link>
 
                       <Link
-                        to="/create-learning-plan"
+                         to="/learning-plans/create"
                         className="group flex items-center px-4 py-3 text-sm text-gray-300 hover:bg-[var(--dark-surface-light)] hover:text-white"
                         onClick={() => setShowCreateMenu(false)}
                       >
