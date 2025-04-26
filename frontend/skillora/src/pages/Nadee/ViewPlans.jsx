@@ -44,7 +44,7 @@ const ViewPlans = () => {
       <div className="overflow-x-auto">
         <table className="min-w-full table-auto border">
           <thead>
-            <tr className="bg-gray-100 text-left">
+            <tr className="bg-black-100 text-left">
               <th className="p-3 border">Name</th>
               <th className="p-3 border">Description</th>
               <th className="p-3 border">Due Date</th>
