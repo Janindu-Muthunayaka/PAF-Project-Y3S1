@@ -175,6 +175,9 @@ export const userService = {
   
   // Get followers
   getFollowers: (userId) => api.get(`/users/myFollowers/${userId}`),
+
+  // NEW: Get following
+getFollowing: (userId) => api.get(`/users/myFollowing/${userId}`),
   
   // Unfollow a user
   unfollowUser: (user1Id, user2Id) => {
@@ -201,16 +204,12 @@ export const userService = {
 
 // Function to get user data from the session
 export const sessionId = {
-  // Function to get user data from the session
-  getUserData: async () => {
-    try {
-      const response = await api.get('/getUserData'); // Make sure the URL matches your backend route
-
-      return response.data; // This will be the user data returned from your backend
-    } catch (error) {
-      console.error('Error fetching user data:', error);
-      throw error; // Optionally, you can throw the error to handle it later in the frontend
-    }
-  },
+  getUserData: () => fetch('/api/users/session/user', {
+    credentials: 'include' // ✅ sends cookies for session
+  }).then(res => {
+    if (!res.ok) throw new Error('Failed to fetch session user'); // ✅ proper error handling
+    return res.json(); // ✅ parse JSON if successful
+  }),
 };
+
 export default api;

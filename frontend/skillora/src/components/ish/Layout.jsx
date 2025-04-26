@@ -195,11 +195,11 @@ const Layout = ({ children }) => {
                   }}
                 >
                   <Avatar
-                    src={user.avatar}
-                    name={user.displayName}
-                    size="sm"
-                    className="ring-2 ring-[var(--primary)]"
-                  />
+  src={user.avatar}
+  name={user.firstName}
+  size="sm"
+  fallback={user.firstName ? user.firstName.charAt(0).toUpperCase() : '?'}
+/>
                 </button>
                 
                 {showUserMenu && (
