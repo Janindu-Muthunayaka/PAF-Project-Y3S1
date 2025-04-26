@@ -82,12 +82,13 @@ const Home = () => {
         <div className="card">
           <div className="p-5">
             <div className="flex flex-col items-center mb-4">
-              <Avatar
-                src={user.avatar}
-                name={user.displayName}
-                size="xl"
-                className="mb-3"
-              />
+            <Avatar
+  src={user.avatar}
+  name={user.firstName}
+  size="xl"
+  className="mb-3"
+  fallback={user.firstName ? user.firstName.charAt(0).toUpperCase() : '?'}
+/>
               <h2 className="text-xl font-semibold text-white">{`${user.firstName} ${user.lastName}`}</h2>
               <p className="text-gray-400">@{user.userName}</p>
             </div>
@@ -163,11 +164,12 @@ const Home = () => {
         <div className="card">
           <div className="p-5">
             <div className="flex items-center gap-3">
-              <Avatar
-                src={user.avatar}
-                name={user.displayName}
-                size="md"
-              />
+            <Avatar
+  src={user.avatar}
+  name={user.firstName}
+  size="md"
+  fallback={user.firstName ? user.firstName.charAt(0).toUpperCase() : '?'}
+/>
               <div 
                 onClick={goToCreatePost}
                 className="flex-1 bg-[var(--dark-surface-light)] rounded-full py-3 px-5 text-gray-400 cursor-pointer hover:bg-opacity-80 transition-colors"

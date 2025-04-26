@@ -14,6 +14,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class User {
+
     @Id
     private String id;
     private String firstName;
@@ -21,10 +22,9 @@ public class User {
     private String userName;
     private String email;
     private String password;
-    private String dob;
-    private String gender;
     private String profilePicURL;
     private String userType;
+    private String bio;
     private List<String> followers = new ArrayList<>();
     private List<String> following = new ArrayList<>();
 
