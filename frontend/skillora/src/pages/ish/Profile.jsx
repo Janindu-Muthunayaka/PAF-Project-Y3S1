@@ -129,7 +129,7 @@ const Profile = () => {
             <h1 className="text-3xl font-bold text-white mt-2">
               {`${profileData?.firstName || ''} ${profileData?.lastName || ''}`}
             </h1>
-              <p className="text-gray-400">@{profileData?.userName || 'username'}</p>
+              <p className="text-gray-400 ">@{profileData?.userName || 'username'}</p>
 
               <p className="text-gray-300 mt-2 max-w-2xl">
                 {profileData?.bio || 'This user has no bio yet.'}
@@ -181,12 +181,12 @@ const Profile = () => {
 
         </div>
 
-        <div className="border-t border-[var(--dark-border)]">
-          <nav className="flex overflow-x-auto">
+        <div className="border-t border-[var(--dark-border)] py-4">
+          <nav className="flex overflow-x-auto ">
             {tabs.map((tab) => (
               <button
                 key={tab.id}
-                className={`flex-1 px-6 py-4 text-center font-medium flex items-center justify-center gap-2 ${
+                className={`flex-1 px-6 py-4 mr-8 text-center font-medium flex items-center justify-center gap-2 ${
                   activeTab === tab.id
                     ? 'border-b-2 border-[var(--primary)] text-[var(--primary)]'
                     : 'text-gray-400 hover:text-gray-300 hover:bg-[var(--dark-surface-light)]'

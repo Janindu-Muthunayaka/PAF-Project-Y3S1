@@ -325,7 +325,7 @@ const Layout = ({ children }) => {
                 <FiCode className="h-6 w-6 text-[var(--primary)]" />
                 <span className="ml-2 text-lg font-bold text-white">Skillora</span>
               </div>
-              <p className="mt-2 text-sm text-gray-400 max-w-md">
+              <p className="mt-2 text-sm text-gray-400 max-w-md text-left">
                 A programming-based education platform for sharing knowledge and creating personalized learning paths.
               </p>
             </div>
