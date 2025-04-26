@@ -295,11 +295,16 @@ useEffect(() => {
       {/* Post Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-3">
-          <Avatar 
-            name={post.userId?.charAt(0)?.toUpperCase() || 'U'} 
-            size="md"
-            className="ring-2 ring-[var(--primary)] ring-opacity-50 mb-4"
-          />
+        <Avatar 
+  name={
+    userData?.firstName?.charAt(0)?.toUpperCase() || 
+    userData?.lastName?.charAt(0)?.toUpperCase() || 
+    userData?.displayName?.charAt(0)?.toUpperCase() || 
+    'U'
+  }
+  size="md"
+  className="ring-2 ring-[var(--primary)] ring-opacity-50 mb-4"
+/>
           <div>
             <div className="flex items-center space-x-2">
               <h3 className="text-white font-semibold text-base" >{userData?.firstName || userData?.lastName 
