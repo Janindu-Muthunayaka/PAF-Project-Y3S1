@@ -202,6 +202,46 @@ getFollowing: (userId) => api.get(`/users/myFollowing/${userId}`),
 };
 
 
+//Plans Services
+export const planService = {
+  // Create a new plan
+  createPlan: async (formData) => {
+    const res = await api.post('/plans', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    return res.data;
+  },
+
+  // Get all plans
+  getAllPlans: async () => {
+    const res = await api.get('/plans');
+    return res.data;
+  },
+
+  // Get a single plan by ID
+  getSinglePlan: async (id) => {
+    const res = await api.get(`/plans/${id}`);
+    return res.data;
+  },
+
+  // Update a plan
+  updatePlan: async (id, formData) => {
+    const res = await api.put(`/plans/${id}`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    return res.data;
+  },
+
+  // Delete a plan by ID
+  deletePlanById: async (id) => {
+    const res = await api.delete(`/plans/${id}`);
+    return res.data;
+  },
+};
 // Function to get user data from the session
 export const sessionId = {
   getUserData: () => fetch('/api/users/session/user', {
