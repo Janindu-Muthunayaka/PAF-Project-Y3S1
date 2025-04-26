@@ -1,6 +1,5 @@
 package com.skillora.app.controller.Nadee;
 
-import java.io.IOException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,7 +7,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.skillora.app.model.Nadee.Plans;
 import com.skillora.app.service.Nadee.PlanService;
 import com.skillora.app.utility.PlanCollectionException;
@@ -20,9 +18,6 @@ public class PlanController {
 
     @Autowired
     private PlanService planService;
-
-    @Autowired
-    private ObjectMapper objectMapper;
 
     // Get all plans
     @GetMapping
@@ -44,13 +39,10 @@ public class PlanController {
 
     // Create a plan
     @PostMapping
-    public ResponseEntity<?> createPlan(@RequestBody String planJson) {
+    public ResponseEntity<?> createPlan(@RequestBody Plans plan) {
         try {
-            Plans plan = objectMapper.readValue(planJson, Plans.class);
             planService.createPlan(plan);
             return new ResponseEntity<>(plan, HttpStatus.CREATED);
-        } catch (IOException e) {
-            return new ResponseEntity<>("Invalid JSON", HttpStatus.BAD_REQUEST);
         } catch (PlanCollectionException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.UNPROCESSABLE_ENTITY);
         }
@@ -58,13 +50,10 @@ public class PlanController {
 
     // Update a plan
     @PutMapping("/{id}")
-    public ResponseEntity<?> updatePlan(@PathVariable("id") String id, @RequestBody String planJson) {
+    public ResponseEntity<?> updatePlan(@PathVariable("id") String id, @RequestBody Plans plan) {
         try {
-            Plans plan = objectMapper.readValue(planJson, Plans.class);
             planService.updatePlan(id, plan);
             return new ResponseEntity<>("Updated plan with ID " + id, HttpStatus.OK);
-        } catch (IOException e) {
-            return new ResponseEntity<>("Invalid JSON", HttpStatus.BAD_REQUEST);
         } catch (PlanCollectionException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         }

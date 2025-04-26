@@ -2,18 +2,18 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 
 const UpdatePlan = () => {
-  const { planId } = useParams(); // Get the planId from the URL
-  const navigate = useNavigate(); // For navigation after update
+  const { planId } = useParams();
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: '',
     description: '',
     dueDate: '',
     completed: false,
+    url: '', // Add URL field
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Fetch the existing plan data when the component mounts
   useEffect(() => {
     const fetchPlanData = async () => {
       try {
@@ -23,8 +23,9 @@ const UpdatePlan = () => {
           setFormData({
             name: data.name,
             description: data.description,
-            dueDate: data.dueDate.split('T')[0], // Format date for input
+            dueDate: data.dueDate.split('T')[0],
             completed: data.completed,
+            url: data.url, // Fetch URL
           });
           setLoading(false);
         } else {
@@ -60,7 +61,7 @@ const UpdatePlan = () => {
 
       if (response.ok) {
         alert('Plan updated successfully!');
-        navigate('/learning-plans/view'); // Redirect to ViewPlans after update
+        navigate('/learning-plans/view');
       } else {
         alert('Failed to update plan');
       }
@@ -71,19 +72,11 @@ const UpdatePlan = () => {
   };
 
   if (loading) {
-    return (
-      <div className="flex justify-center my-8">
-        <div className="spinner"></div>
-      </div>
-    );
+    return <div className="flex justify-center my-8"><div className="spinner"></div></div>;
   }
 
   if (error) {
-    return (
-      <div className="max-w-3xl mx-auto bg-red-100 p-4 rounded-md text-red-700">
-        {error}
-      </div>
-    );
+    return <div className="max-w-3xl mx-auto bg-red-100 p-4 rounded-md text-red-700">{error}</div>;
   }
 
   return (
@@ -101,7 +94,6 @@ const UpdatePlan = () => {
             required
           />
         </div>
-
         <div>
           <label className="block font-semibold">Description</label>
           <textarea
@@ -113,7 +105,6 @@ const UpdatePlan = () => {
             required
           />
         </div>
-
         <div>
           <label className="block font-semibold">Due Date</label>
           <input
@@ -125,7 +116,6 @@ const UpdatePlan = () => {
             required
           />
         </div>
-
         <div>
           <label className="block font-semibold">Status</label>
           <select
@@ -144,7 +134,18 @@ const UpdatePlan = () => {
             <option value={true}>Completed</option>
           </select>
         </div>
-
+        <div>
+          <label className="block font-semibold">URL</label>
+          <input
+            type="url"
+            name="url"
+            value={formData.url}
+            onChange={handleInputChange}
+            className="w-full p-2 border rounded-lg"
+            placeholder="Enter a URL"
+            required
+          />
+        </div>
         <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
           Update Plan
         </button>

@@ -18,8 +18,6 @@ public class PlanServiceImpl implements PlanService {
     @Autowired
     private PlanRepository planRepo;
 
-    
-
     @Override
     public void createPlan(Plans plans) throws PlanCollectionException {
         Optional<Plans> planOptional = planRepo.findByName(plans.getName());
@@ -32,19 +30,15 @@ public class PlanServiceImpl implements PlanService {
         }
     }
 
-
-
     @Override
     public List<Plans> getAllPlans() {
-       List<Plans> plans = planRepo.findAll();
-       if(plans.size() > 0){
-        return plans;
-       }else{
-        return new ArrayList<Plans>();
-       }
+        List<Plans> plans = planRepo.findAll();
+        if (plans.size() > 0) {
+            return plans;
+        } else {
+            return new ArrayList<>();
+        }
     }
-
-
 
     @Override
     public Plans getSinglePlan(String id) throws PlanCollectionException {
@@ -56,47 +50,37 @@ public class PlanServiceImpl implements PlanService {
         }
     }
 
-
-
     @Override
     public void updatePlan(String id, Plans plans) throws PlanCollectionException {
         Optional<Plans> planWithId = planRepo.findById(id);
         Optional<Plans> planWithSameName = planRepo.findByName(plans.getName());
-        if(planWithId.isPresent()){
-            if(planWithSameName.isPresent() && !planWithSameName.get().getId().equals(id)){
+        if (planWithId.isPresent()) {
+            if (planWithSameName.isPresent() && !planWithSameName.get().getId().equals(id)) {
                 throw new PlanCollectionException(PlanCollectionException.PlanAllreadyExists());
             }
 
             Plans updateToPlan = planWithId.get();
-    
+
             updateToPlan.setName(plans.getName());
             updateToPlan.setDescription(plans.getDescription());
             updateToPlan.setDueDate(plans.getDueDate());
+            updateToPlan.setUrl(plans.getUrl()); // Add URL field
             updateToPlan.setUpdatedAt(new Date(System.currentTimeMillis()));
-            
-            updateToPlan.setResourceFileUrls(plans.getResourceFileUrls());  // Single resource file URL
-            updateToPlan.setVideoFileUrls(plans.getVideoFileUrls());        // Single video file URL
-            
+
             planRepo.save(updateToPlan);
 
-        }else{
+        } else {
             throw new PlanCollectionException(PlanCollectionException.NotFoundException(id));
-    
-    }
-
-
-}
-
-
-
-    @Override
-    public void deletePlanById(String id) throws PlanCollectionException {
-       Optional<Plans> planOptional = planRepo.findById(id);
-        if(!planOptional.isPresent()){
-            throw new PlanCollectionException(PlanCollectionException.NotFoundException(id));
-        }else{
-            planRepo.deleteById(id);
         }
     }
 
+    @Override
+    public void deletePlanById(String id) throws PlanCollectionException {
+        Optional<Plans> planOptional = planRepo.findById(id);
+        if (!planOptional.isPresent()) {
+            throw new PlanCollectionException(PlanCollectionException.NotFoundException(id));
+        } else {
+            planRepo.deleteById(id);
+        }
+    }
 }

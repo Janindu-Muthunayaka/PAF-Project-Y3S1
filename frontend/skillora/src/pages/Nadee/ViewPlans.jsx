@@ -5,7 +5,6 @@ const ViewPlans = () => {
   const [plans, setPlans] = useState([]);
   const navigate = useNavigate();
 
-  // Fetch all plans from the backend
   const fetchPlans = async () => {
     try {
       const res = await fetch('http://localhost:8080/api/plans');
@@ -16,7 +15,6 @@ const ViewPlans = () => {
     }
   };
 
-  // Handle delete functionality
   const handleDelete = async (id) => {
     if (!window.confirm('Are you sure you want to delete this plan?')) return;
 
@@ -25,7 +23,6 @@ const ViewPlans = () => {
         method: 'DELETE',
       });
       if (res.ok) {
-        // Remove the deleted plan from the UI
         setPlans((prev) => prev.filter((plan) => plan.id !== id));
         alert('Plan deleted successfully!');
       } else {
@@ -52,16 +49,31 @@ const ViewPlans = () => {
               <th className="p-3 border">Description</th>
               <th className="p-3 border">Due Date</th>
               <th className="p-3 border">Status</th>
+              <th className="p-3 border">URL</th>
               <th className="p-3 border">Actions</th>
             </tr>
           </thead>
           <tbody>
             {plans.map((plan) => (
-              <tr key={plan.id || plan._id} className="hover:bg-gray-50">
+              <tr key={plan.id || plan._id} className="hover:bg-black-50">
                 <td className="p-3 border">{plan.name}</td>
                 <td className="p-3 border">{plan.description}</td>
                 <td className="p-3 border">{new Date(plan.dueDate).toLocaleDateString()}</td>
                 <td className="p-3 border">{plan.completed ? 'Completed' : 'Not completed'}</td>
+                <td className="p-3 border">
+                  {plan.url ? (
+                    <a
+                      href={plan.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600"
+                    >
+                      Visit Link
+                    </a>
+                  ) : (
+                    <span className="text-gray-500">No URL</span>
+                  )}
+                </td>
                 <td className="p-3 border space-x-2">
                   <button
                     onClick={() => navigate(`/update-plan/${plan.id || plan._id}`)}
@@ -80,7 +92,7 @@ const ViewPlans = () => {
             ))}
             {plans.length === 0 && (
               <tr>
-                <td colSpan="5" className="p-4 text-center text-gray-500">
+                <td colSpan="6" className="p-4 text-center text-gray-500">
                   No plans found.
                 </td>
               </tr>

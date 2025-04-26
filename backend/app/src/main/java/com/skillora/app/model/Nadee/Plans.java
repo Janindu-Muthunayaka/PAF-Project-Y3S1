@@ -26,11 +26,9 @@ public class Plans {
     private Boolean completed;
     private Date createdAt;
     private Date updatedAt;
+    private String url;
 
-     // New fields to store resource and video URLs or paths
-    private List<String> resourceFileUrls; // e.g., PDF, DOC, etc.
-    private List<String> videoFileUrls;    // e.g., MP4, AVI, etc.
-
+    
     // Constructor already provided by @AllArgsConstructor annotation
 
     // Getters and setters
@@ -90,21 +88,12 @@ public class Plans {
         this.updatedAt = updatedAt;
     }
 
-    public List<String> getResourceFileUrls() {
-        return resourceFileUrls;
+    public String getUrl() {
+        return url;
     }
 
-    public void setResourceFileUrls(List<String> resourceFileUrls) {
-        this.resourceFileUrls = resourceFileUrls;
+    public void setUrl(String url) {
+        this.url = url;
     }
-
-    public List<String> getVideoFileUrls() {
-        return videoFileUrls;
-    }
-
-    public void setVideoFileUrls(List<String> videoFileUrls) {
-        this.videoFileUrls = videoFileUrls;
-    }
-
 }
 

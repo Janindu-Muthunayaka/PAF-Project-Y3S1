@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom'; // Import useNavigate
+import { useNavigate } from 'react-router-dom';
 
 const CreatePlan = () => {
   const [formData, setFormData] = useState({
@@ -8,9 +8,10 @@ const CreatePlan = () => {
     description: '',
     dueDate: '',
     completed: false,
+    url: '', // Add URL field
   });
 
-  const navigate = useNavigate(); // Initialize useNavigate
+  const navigate = useNavigate();
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -28,7 +29,7 @@ const CreatePlan = () => {
       });
       if (response.status === 200 || response.status === 201) {
         alert('Plan created successfully!');
-        navigate('/learning-plans/view'); // Redirect to ViewPlans
+        navigate('/learning-plans/view');
       }
     } catch (error) {
       console.error('Error creating plan:', error);
@@ -85,6 +86,18 @@ const CreatePlan = () => {
             <option value={false}>Not completed</option>
             <option value={true}>Completed</option>
           </select>
+        </div>
+        <div>
+          <label className="block font-semibold">URL</label>
+          <input
+            type="url"
+            name="url"
+            value={formData.url}
+            onChange={handleInputChange}
+            className="w-full p-2 border rounded-lg"
+            placeholder="Enter a URL"
+            required
+          />
         </div>
         <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
           Create Plan
