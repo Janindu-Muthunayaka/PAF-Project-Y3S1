@@ -163,12 +163,12 @@ const Profile = () => {
 
               <div className="profile-stat">
                 <div className="profile-stat-value">{followers.length}</div>
-                <div className="profile-stat-label">Followers</div>
+                <div className="profile-stat-label">Following</div>
               </div>
 
               <div className="profile-stat">
                 <div className="profile-stat-value">{following.length}</div>
-                <div className="profile-stat-label">Following</div>
+                <div className="profile-stat-label">Followers</div>
               </div>
 
               <div className="profile-stat">
