@@ -20,6 +20,7 @@ public class Plans {
 
     @Id
     private String id;
+    private String userId;
     private String name;
     private String description;
     private Date dueDate;
@@ -38,6 +39,10 @@ public class Plans {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
     public String getName() {

@@ -39,9 +39,11 @@ public class PlanController {
 
     // Create a plan
     @PostMapping
-    public ResponseEntity<?> createPlan(@RequestBody Plans plan) {
+    public ResponseEntity<?> createPlan(@RequestBody Plans plan,@RequestHeader("user-id") String userId) {
+        System.out.println("User ID: " + userId);
+        System.out.println("IN post controller: " );
         try {
-            planService.createPlan(plan);
+            planService.createPlan(userId,plan);
             return new ResponseEntity<>(plan, HttpStatus.CREATED);
         } catch (PlanCollectionException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.UNPROCESSABLE_ENTITY);

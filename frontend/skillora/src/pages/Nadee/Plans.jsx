@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { useUser } from '../../context/ish/UserContext';
 
 const CreatePlan = () => {
+  const { user } = useUser();
   const [formData, setFormData] = useState({
     name: '',
     description: '',
@@ -25,6 +27,7 @@ const CreatePlan = () => {
       const response = await axios.post('http://localhost:8080/api/plans', formData, {
         headers: {
           'Content-Type': 'application/json',
+          'user-id': user.id, // Include user.id here
         },
       });
       if (response.status === 200 || response.status === 201) {

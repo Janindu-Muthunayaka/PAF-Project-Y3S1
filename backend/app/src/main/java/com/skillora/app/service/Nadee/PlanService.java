@@ -8,7 +8,7 @@ import com.skillora.app.utility.PlanCollectionException;
 
 public interface PlanService {
 
-    public void createPlan(Plans plans) throws PlanCollectionException;
+    public void createPlan(String userId,Plans plans) throws PlanCollectionException;
 
     public List<Plans> getAllPlans();
 

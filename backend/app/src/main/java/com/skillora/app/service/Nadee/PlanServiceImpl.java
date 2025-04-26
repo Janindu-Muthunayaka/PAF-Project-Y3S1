@@ -19,14 +19,17 @@ public class PlanServiceImpl implements PlanService {
     private PlanRepository planRepo;
 
     @Override
-    public void createPlan(Plans plans) throws PlanCollectionException {
+    public void createPlan(String userId,Plans plans) throws PlanCollectionException {
+        System.out.println("plan service implemented"+userId);
         Optional<Plans> planOptional = planRepo.findByName(plans.getName());
         if (planOptional.isPresent()) {
             throw new PlanCollectionException(PlanCollectionException.PlanAllreadyExists());
         } else {
             plans.setCreatedAt(new Date(System.currentTimeMillis()));
             plans.setUpdatedAt(new Date(System.currentTimeMillis()));
+            plans.setUserId(userId); 
             planRepo.save(plans);
+            
         }
     }
 
