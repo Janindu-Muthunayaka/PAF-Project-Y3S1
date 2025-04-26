@@ -118,10 +118,12 @@ const Profile = () => {
           <div className="flex flex-col sm:flex-row items-center sm:items-end gap-6">
             <div className="flex-shrink-0">
             <Avatar
-                name={profileData?.displayName || 'User'}
-                size="2xl"
-                className="profile-avatar"
-              />
+  src={profileData?.avatar}
+  name={profileData?.firstName || profileData?.displayName || 'User'}
+  size="2xl"
+  className="profile-avatar"
+  fallback={profileData?.firstName ? profileData.firstName.charAt(0).toUpperCase() : 'U'}
+/>
               </div>
             <div className="flex-1 text-center sm:text-left">
             <h1 className="text-3xl font-bold text-white mt-2">
