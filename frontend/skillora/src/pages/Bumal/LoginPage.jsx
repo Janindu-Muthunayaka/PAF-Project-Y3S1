@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { userService } from '../../services/ish/api';
-import { sessionId } from '../../services/ish/api';
 import { FcGoogle } from 'react-icons/fc';
 
 const LoginPage = () => {
@@ -11,7 +10,6 @@ const LoginPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
-  // Handle form submission
   const handleLogin = async (e) => {
     e.preventDefault();
     
@@ -29,14 +27,8 @@ const LoginPage = () => {
       const response = await userService.login(loginDto);
   
       if (response.data) {
-        // 🔐 Optional: store auth data if needed
         sessionStorage.setItem('userData', JSON.stringify(response.data));
-  
-        // ✅ Now fetch the current session user
-        const sessionUser = await sessionId.getUserData();
-  
-        // ✅ Redirect to their profile page with real ID
-        navigate(`/profile/${sessionUser.id}`);
+        navigate('/');
       } else {
         setError('Invalid email or password');
       }
@@ -52,42 +44,11 @@ const LoginPage = () => {
     }
   };
 
-  const handleGoogleLogin = async () => {
+  const handleGoogleLogin = () => {
     setIsLoading(true);
     setError('');
-    try {
-      // Use the userService to make a POST request
-      const response = await userService.googleSignUp({});
-      
-      if (response.data) {
-        // Store the user data in session storage
-        sessionStorage.setItem('userData', JSON.stringify(response.data));
-        
-        // Wait a moment for the session to be established
-        await new Promise(resolve => setTimeout(resolve, 500));
-        
-        try {
-          // Fetch the session user data
-          const sessionUser = await sessionId.getUserData();
-          if (sessionUser) {
-            navigate(`/profile/${sessionUser.id}`);
-          } else {
-            throw new Error('Failed to get session user data');
-          }
-        } catch (sessionErr) {
-          console.error('Session error:', sessionErr);
-          // If session fetch fails, still try to navigate to profile
-          navigate('/profile');
-        }
-      } else {
-        throw new Error('No user data received from Google signup');
-      }
-    } catch (err) {
-      console.error('Google login error:', err);
-      setError('Failed to sign in with Google. Please try again.');
-    } finally {
-      setIsLoading(false);
-    }
+    // Redirect to backend OAuth2 endpoint
+    window.location.href = 'http://localhost:8080/oauth2/authorization/google';
   };
 
   return (
