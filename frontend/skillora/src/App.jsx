@@ -41,24 +41,31 @@ const AppContent = () => {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        // Check if we're returning from OAuth2 callback (Google Sign-In)
-        const urlParams = new URLSearchParams(window.location.search);
-        const code = urlParams.get('code');
+        console.log("\n[App.jsx] Checking Authentication");
+        console.log("Location:", location.pathname);
         
-        if (code) {
-          // We're returning from OAuth2 callback, fetch user data from backend
-          const response = await userService.getOAuth2User();
+        // First check session storage for normal login
+        const userData = sessionStorage.getItem('userData');
+        if (userData) {
+          console.log("Found user data in session storage");
+          setIsAuthenticated(true);
+          return;
+        }
+        
+        // If no session storage, check backend session for Google login
+        try {
+          const response = await userService.getSessionUser();
+          console.log("Session Check Response:", response.data);
+          
           if (response.data) {
             // Store user data in session storage and update auth state
             sessionStorage.setItem('userData', JSON.stringify(response.data));
+            console.log("User data stored in session:", response.data);
             setIsAuthenticated(true);
-            // Remove the code from URL without refreshing
-            window.history.replaceState({}, document.title, window.location.pathname);
           }
-        } else {
-          // Regular session check for normal login
-          const userData = sessionStorage.getItem('userData');
-          setIsAuthenticated(!!userData);
+        } catch (sessionError) {
+          console.log("No active session found");
+          setIsAuthenticated(false);
         }
       } catch (error) {
         console.error('Auth check error:', error);

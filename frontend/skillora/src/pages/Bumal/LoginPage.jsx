@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { userService } from '../../services/ish/api';
 import { FcGoogle } from 'react-icons/fc';
@@ -24,10 +24,16 @@ const LoginPage = () => {
     };
   
     try {
+      console.log("\n[LoginPage.jsx] Normal Login Attempt");
+      console.log("Location: /login");
+      console.log("Login DTO:", loginDto);
+      
       const response = await userService.login(loginDto);
+      console.log("Login Response:", response.data);
   
       if (response.data) {
         sessionStorage.setItem('userData', JSON.stringify(response.data));
+        console.log("User data stored in session:", response.data);
         navigate('/');
       } else {
         setError('Invalid email or password');
@@ -47,9 +53,47 @@ const LoginPage = () => {
   const handleGoogleLogin = () => {
     setIsLoading(true);
     setError('');
+    console.log("\n[LoginPage.jsx] Initiating Google Login");
+    console.log("Location: /login");
     // Redirect to backend OAuth2 endpoint
     window.location.href = 'http://localhost:8080/oauth2/authorization/google';
   };
+
+  // Add effect to handle session check after OAuth2 redirect
+  useEffect(() => {
+    const checkSession = async () => {
+      try {
+        console.log("\n[LoginPage.jsx] Checking Session");
+        console.log("Location:", window.location.pathname);
+        
+        // First check session storage for normal login
+        const userData = sessionStorage.getItem('userData');
+        if (userData) {
+          console.log("Found user data in session storage");
+          navigate('/');
+          return;
+        }
+        
+        // If no session storage, check backend session for Google login
+        const response = await userService.getSessionUser();
+        console.log("Session Check Response:", response.data);
+        
+        if (response.data) {
+          // Store user data in session
+          sessionStorage.setItem('userData', JSON.stringify(response.data));
+          console.log("User data stored in session:", response.data);
+          navigate('/');
+        }
+      } catch (err) {
+        console.log("No active session found");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    // Check session on component mount
+    checkSession();
+  }, [navigate]);
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">

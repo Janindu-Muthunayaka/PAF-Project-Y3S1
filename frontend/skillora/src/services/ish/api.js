@@ -156,6 +156,9 @@ export const userService = {
   // Login
   login: (credentials) => api.post('/users/login', credentials),
   
+  // Get session user
+  getSessionUser: () => api.get('/users/session/user'),
+  
   // Get all users
   getAllUsers: () => api.get('/users/allUsers'),
   
@@ -174,7 +177,7 @@ export const userService = {
   // Get followers
   getFollowers: (userId) => api.get(`/users/myFollowers/${userId}`),
 
-  // NEW: Get following
+  // Get following
   getFollowing: (userId) => api.get(`/users/myFollowing/${userId}`),
   
   // Unfollow a user

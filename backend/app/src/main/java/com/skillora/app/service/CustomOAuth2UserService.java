@@ -9,7 +9,7 @@ import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
+import jakarta.servlet.http.HttpSession;
 
 @Service
 public class CustomOAuth2UserService extends DefaultOAuth2UserService {
@@ -17,30 +17,49 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private HttpSession session;
+
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
-        OAuth2User oAuth2User = super.loadUser(userRequest);
-        
-        String email = oAuth2User.getAttribute("email");
-        String name = oAuth2User.getAttribute("name");
-        String picture = oAuth2User.getAttribute("picture");
+        System.out.println("\n[CustomOAuth2UserService.java] Loading OAuth2 User");
+        OAuth2User oauth2User = super.loadUser(userRequest);
+        System.out.println("OAuth2 User Attributes: " + oauth2User.getAttributes());
 
-        // Check if user exists
-        User existingUser = userService.findByEmail(email);
-        if (existingUser == null) {
+        // Extract user info from OAuth2 response
+        String email = oauth2User.getAttribute("email");
+        String name = oauth2User.getAttribute("name");
+        String picture = oauth2User.getAttribute("picture");
+        
+        System.out.println("Extracted User Info:");
+        System.out.println("Email: " + email);
+        System.out.println("Name: " + name);
+        System.out.println("Picture: " + picture);
+
+        // Check if user exists in database
+        User user = userService.findByEmail(email);
+        System.out.println("Database Check: " + (user != null ? "User Found" : "User Not Found"));
+
+        if (user == null) {
             // Create new user
-            User newUser = new User();
-            newUser.setEmail(email);
-            newUser.setFirstName(name);
-            newUser.setUserName(email.split("@")[0]); // Use email prefix as username
-            newUser.setProfilePicURL(picture);
-            newUser.setUserType("User");
-            newUser.setBio("");
-            newUser.setFollowers(new ArrayList<>());
-            newUser.setFollowing(new ArrayList<>());
-            userService.register(newUser);
+            System.out.println("Creating new user...");
+            user = new User();
+            user.setEmail(email);
+            user.setFirstName(name);
+            user.setUserName(email.split("@")[0]); // Use email prefix as username
+            user.setProfilePicURL(picture);
+            user.setUserType("User");
+            user.setBio("");
+            user = userService.register(user);
+            System.out.println("New user created: " + user);
+        } else {
+            System.out.println("Existing user found: " + user);
         }
 
-        return oAuth2User;
+        // Store user ID in session
+        session.setAttribute("userId", user.getId());
+        System.out.println("User ID stored in session: " + user.getId());
+
+        return oauth2User;
     }
 } 

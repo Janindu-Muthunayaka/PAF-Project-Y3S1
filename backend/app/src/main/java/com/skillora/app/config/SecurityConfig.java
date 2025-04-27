@@ -9,6 +9,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 
 import java.util.Arrays;
 
@@ -30,6 +31,22 @@ public class SecurityConfig {
                 .userInfoEndpoint(userInfo -> userInfo
                     .userService(customOAuth2UserService())
                 )
+                .successHandler((request, response, authentication) -> {
+                    System.out.println("\n[SecurityConfig.java] OAuth2 Login Success");
+                    System.out.println("Location: /login/oauth2/code/google");
+                    System.out.println("Authentication: " + authentication);
+                    System.out.println("Principal: " + authentication.getPrincipal());
+                    
+                    // Get the user details from the authentication
+                    Object principal = authentication.getPrincipal();
+                    if (principal instanceof OAuth2User) {
+                        OAuth2User oauth2User = (OAuth2User) principal;
+                        System.out.println("OAuth2 User Attributes: " + oauth2User.getAttributes());
+                    }
+                    
+                    // Redirect to frontend
+                    response.sendRedirect("http://localhost:3000");
+                })
             );
 
         return http.build();
