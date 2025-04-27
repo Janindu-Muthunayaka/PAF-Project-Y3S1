@@ -79,7 +79,10 @@ const AppContent = () => {
 
   // Don't redirect if we're on the login page or OAuth2 callback
   // This prevents redirect loops during authentication
-  if (!isAuthenticated && location.pathname !== '/login' && !location.search.includes('code=')) {
+  if (!isAuthenticated && 
+      location.pathname !== '/login' && 
+      location.pathname !== '/register' && 
+      !location.search.includes('code=')) {
     return <Navigate to="/login" replace />;
   }
 

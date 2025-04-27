@@ -156,6 +156,12 @@ export const userService = {
   // Login
   login: (credentials) => api.post('/users/login', credentials),
   
+  // Logout
+  logout: () => {
+    sessionStorage.removeItem('userData');
+    return api.post('/users/logout');
+  },
+  
   // Get session user
   getSessionUser: () => api.get('/users/session/user'),
   

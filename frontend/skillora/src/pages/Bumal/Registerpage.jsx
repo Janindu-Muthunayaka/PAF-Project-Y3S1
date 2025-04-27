@@ -80,42 +80,13 @@ const RegisterPage = () => {
     }
   };
 
-  const handleGoogleSignup = async () => {
+  const handleGoogleLogin = () => {
     setIsLoading(true);
     setError('');
-    try {
-      // Use the userService to make a POST request
-      const response = await userService.googleSignUp({});
-      
-      if (response.data) {
-        // Store the user data in session storage
-        sessionStorage.setItem('userData', JSON.stringify(response.data));
-        
-        // Wait a moment for the session to be established
-        await new Promise(resolve => setTimeout(resolve, 500));
-        
-        try {
-          // Fetch the session user data
-          const sessionUser = await sessionId.getUserData();
-          if (sessionUser) {
-            navigate(`/profile/${sessionUser.id}`);
-          } else {
-            throw new Error('Failed to get session user data');
-          }
-        } catch (sessionErr) {
-          console.error('Session error:', sessionErr);
-          // If session fetch fails, still try to navigate to profile
-          navigate('/profile');
-        }
-      } else {
-        throw new Error('No user data received from Google signup');
-      }
-    } catch (err) {
-      console.error('Google signup error:', err);
-      setError('Failed to sign up with Google. Please try again.');
-    } finally {
-      setIsLoading(false);
-    }
+    console.log("\n[LoginPage.jsx] Initiating Google Login");
+    console.log("Location: /login");
+    // Redirect to backend OAuth2 endpoint
+    window.location.href = 'http://localhost:8080/oauth2/authorization/google';
   };
 
   return (
