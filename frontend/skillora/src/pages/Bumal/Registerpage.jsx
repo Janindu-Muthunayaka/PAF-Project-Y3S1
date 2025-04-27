@@ -1,21 +1,18 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { userService } from '../../services/ish/api';
-import { sessionId } from '../../services/ish/api';
 import { FcGoogle } from 'react-icons/fc';
 
 const RegisterPage = () => {
   const [formData, setFormData] = useState({
-    email: '',
-    password: '',
-    confirmPassword: '',
     firstName: '',
     lastName: '',
     userName: '',
-    bio: '',
+    email: '',
+    password: '',
+    confirmPassword: ''
   });
   const [error, setError] = useState('');
-  const [successMessage, setSuccessMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
@@ -27,51 +24,34 @@ const RegisterPage = () => {
     }));
   };
 
-  const handleRegister = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-
-    // Basic validation
-    if (!formData.email || !formData.password || !formData.firstName || !formData.userName || !formData.confirmPassword) {
-      setError('Please fill in all fields');
-      return;
-    }
+    setIsLoading(true);
+    setError('');
 
     if (formData.password !== formData.confirmPassword) {
       setError('Passwords do not match');
+      setIsLoading(false);
       return;
     }
 
-    const user = {
-      email: formData.email,
-      password: formData.password,
-      firstName: formData.firstName,
-      lastName: formData.lastName,
-      userName: formData.userName,
-      bio: formData.bio,
-      userType: 'User', // Setting default user type
-      profilePicURL: '', // Empty profile pic URL initially
-    };
-
     try {
-      setIsLoading(true);
-      const response = await userService.register(user);
+      console.log("\n[RegisterPage.jsx] Registration Attempt");
+      console.log("Location: /register");
+      console.log("Form Data:", formData);
+      
+      const response = await userService.register(formData);
+      console.log("Registration Response:", response.data);
 
       if (response.data) {
-        setSuccessMessage('Registration successful! Please login.');
-        setTimeout(() => {
-          navigate('/login'); // Redirect to login page after successful registration
-        }, 2000);
+        sessionStorage.setItem('userData', JSON.stringify(response.data));
+        console.log("User data stored in session:", response.data);
+        navigate('/');
       }
     } catch (err) {
       console.error('Registration error:', err);
       if (err.response && err.response.status === 409) {
-        if (err.response.data.includes('Username')) {
-          setError('Username already exists. Please choose another one.');
-        } else if (err.response.data.includes('Email')) {
-          setError('Email already exists. Please use another email or login.');
-        } else {
-          setError(err.response.data);
-        }
+        setError('Email or username already exists');
       } else {
         setError('An error occurred during registration. Please try again.');
       }
@@ -80,14 +60,50 @@ const RegisterPage = () => {
     }
   };
 
-  const handleGoogleLogin = () => {
+  const handleGoogleSignUp = () => {
     setIsLoading(true);
     setError('');
-    console.log("\n[LoginPage.jsx] Initiating Google Login");
-    console.log("Location: /login");
+    console.log("\n[RegisterPage.jsx] Initiating Google Sign Up");
+    console.log("Location: /register");
     // Redirect to backend OAuth2 endpoint
     window.location.href = 'http://localhost:8080/oauth2/authorization/google';
   };
+
+  // Add effect to handle session check after OAuth2 redirect
+  useEffect(() => {
+    const checkSession = async () => {
+      try {
+        console.log("\n[RegisterPage.jsx] Checking Session");
+        console.log("Location:", window.location.pathname);
+        
+        // First check session storage for normal login
+        const userData = sessionStorage.getItem('userData');
+        if (userData) {
+          console.log("Found user data in session storage");
+          navigate('/');
+          return;
+        }
+        
+        // If no session storage, check backend session for Google login
+        const response = await userService.getSessionUser();
+        console.log("Session Check Response:", response.data);
+        
+        if (response.data) {
+          // Store user data in session
+          sessionStorage.setItem('userData', JSON.stringify(response.data));
+          console.log("User data stored in session:", response.data);
+          navigate('/');
+        }
+      } catch (err) {
+        console.log("No active session found");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    // Check session on component mount
+    checkSession();
+  }, [navigate]);
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
@@ -105,38 +121,40 @@ const RegisterPage = () => {
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
         <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
-          <form className="space-y-6" onSubmit={handleRegister}>
-            <div>
-              <label htmlFor="firstName" className="block text-sm font-medium text-gray-700">
-                First Name
-              </label>
-              <div className="mt-1">
-                <input
-                  id="firstName"
-                  name="firstName"
-                  type="text"
-                  required
-                  value={formData.firstName}
-                  onChange={handleChange}
-                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                />
+          <form className="space-y-6" onSubmit={handleSubmit}>
+            <div className="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-2">
+              <div>
+                <label htmlFor="firstName" className="block text-sm font-medium text-gray-700">
+                  First name
+                </label>
+                <div className="mt-1">
+                  <input
+                    type="text"
+                    name="firstName"
+                    id="firstName"
+                    required
+                    value={formData.firstName}
+                    onChange={handleChange}
+                    className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                  />
+                </div>
               </div>
-            </div>
 
-            <div>
-              <label htmlFor="lastName" className="block text-sm font-medium text-gray-700">
-                Last Name
-              </label>
-              <div className="mt-1">
-                <input
-                  id="lastName"
-                  name="lastName"
-                  type="text"
-                  required
-                  value={formData.lastName}
-                  onChange={handleChange}
-                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                />
+              <div>
+                <label htmlFor="lastName" className="block text-sm font-medium text-gray-700">
+                  Last name
+                </label>
+                <div className="mt-1">
+                  <input
+                    type="text"
+                    name="lastName"
+                    id="lastName"
+                    required
+                    value={formData.lastName}
+                    onChange={handleChange}
+                    className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                  />
+                </div>
               </div>
             </div>
 
@@ -146,9 +164,9 @@ const RegisterPage = () => {
               </label>
               <div className="mt-1">
                 <input
-                  id="userName"
-                  name="userName"
                   type="text"
+                  name="userName"
+                  id="userName"
                   required
                   value={formData.userName}
                   onChange={handleChange}
@@ -163,28 +181,11 @@ const RegisterPage = () => {
               </label>
               <div className="mt-1">
                 <input
-                  id="email"
-                  name="email"
                   type="email"
-                  autoComplete="email"
+                  name="email"
+                  id="email"
                   required
                   value={formData.email}
-                  onChange={handleChange}
-                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                />
-              </div>
-            </div>
-
-            <div>
-              <label htmlFor="bio" className="block text-sm font-medium text-gray-700">
-                Bio
-              </label>
-              <div className="mt-1">
-                <textarea
-                  id="bio"
-                  name="bio"
-                  rows="3"
-                  value={formData.bio}
                   onChange={handleChange}
                   className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                 />
@@ -197,10 +198,9 @@ const RegisterPage = () => {
               </label>
               <div className="mt-1">
                 <input
-                  id="password"
-                  name="password"
                   type="password"
-                  autoComplete="new-password"
+                  name="password"
+                  id="password"
                   required
                   value={formData.password}
                   onChange={handleChange}
@@ -211,14 +211,13 @@ const RegisterPage = () => {
 
             <div>
               <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">
-                Confirm Password
+                Confirm password
               </label>
               <div className="mt-1">
                 <input
-                  id="confirmPassword"
-                  name="confirmPassword"
                   type="password"
-                  autoComplete="new-password"
+                  name="confirmPassword"
+                  id="confirmPassword"
                   required
                   value={formData.confirmPassword}
                   onChange={handleChange}
@@ -229,9 +228,6 @@ const RegisterPage = () => {
 
             {error && (
               <div className="text-red-600 text-sm text-center">{error}</div>
-            )}
-            {successMessage && (
-              <div className="text-green-600 text-sm text-center">{successMessage}</div>
             )}
 
             <div>
@@ -257,7 +253,7 @@ const RegisterPage = () => {
 
             <div className="mt-6">
               <button
-                onClick={handleGoogleSignup}
+                onClick={handleGoogleSignUp}
                 disabled={isLoading}
                 className="w-full flex items-center justify-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
               >

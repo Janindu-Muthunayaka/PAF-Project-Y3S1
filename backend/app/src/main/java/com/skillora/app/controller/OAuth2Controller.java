@@ -28,8 +28,13 @@ public class OAuth2Controller {
 
         Map<String, Object> attributes = principal.getAttributes();
         String email = (String) attributes.get("email");
-        String name = (String) attributes.get("name");
+        String fullName = (String) attributes.get("name");
         String picture = (String) attributes.get("picture");
+
+        // Split the full name into first and last name
+        String[] nameParts = fullName.split(" ", 2);
+        String firstName = nameParts[0];
+        String lastName = nameParts.length > 1 ? nameParts[1] : ""; // Handle case where there's no last name
 
         // Check if user exists
         User existingUser = userService.findByEmail(email);
@@ -42,7 +47,8 @@ public class OAuth2Controller {
         // Create new user
         User newUser = new User();
         newUser.setEmail(email);
-        newUser.setFirstName(name);
+        newUser.setFirstName(firstName);
+        newUser.setLastName(lastName);
         newUser.setUserName(email.split("@")[0]); // Use email prefix as username
         newUser.setProfilePicURL(picture);
         newUser.setUserType("User");

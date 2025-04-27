@@ -28,12 +28,18 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
         // Extract user info from OAuth2 response
         String email = oauth2User.getAttribute("email");
-        String name = oauth2User.getAttribute("name");
+        String fullName = oauth2User.getAttribute("name");
         String picture = oauth2User.getAttribute("picture");
+        
+        // Split the full name into first and last name
+        String[] nameParts = fullName.split(" ", 2);
+        String firstName = nameParts[0];
+        String lastName = nameParts.length > 1 ? nameParts[1] : ""; // Handle case where there's no last name
         
         System.out.println("Extracted User Info:");
         System.out.println("Email: " + email);
-        System.out.println("Name: " + name);
+        System.out.println("First Name: " + firstName);
+        System.out.println("Last Name: " + lastName);
         System.out.println("Picture: " + picture);
 
         // Check if user exists in database
@@ -45,7 +51,8 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             System.out.println("Creating new user...");
             user = new User();
             user.setEmail(email);
-            user.setFirstName(name);
+            user.setFirstName(firstName);
+            user.setLastName(lastName);
             user.setUserName(email.split("@")[0]); // Use email prefix as username
             user.setProfilePicURL(picture);
             user.setUserType("User");
