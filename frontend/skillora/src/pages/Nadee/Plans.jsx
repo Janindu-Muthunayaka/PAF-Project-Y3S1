@@ -52,6 +52,7 @@ const CreatePlan = () => {
             value={formData.name}
             onChange={handleInputChange}
             className="w-full p-2 border rounded-lg"
+            placeholder="Enter user name -- Plan name" // Add placeholder
             required
           />
         </div>
@@ -63,6 +64,7 @@ const CreatePlan = () => {
             value={formData.description}
             onChange={handleInputChange}
             className="w-full p-2 border rounded-lg"
+            placeholder="Enter a brief description of the plan" // Add placeholder
             required
           />
         </div>
