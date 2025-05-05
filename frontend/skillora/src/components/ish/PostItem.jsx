@@ -232,9 +232,17 @@ useEffect(() => {
   };
 
   const handleConfirmDelete = async (e) => {
+  
+    //testing to be removed
+
+  console.log("in Post Item delete post with ID:", post.id);
+  console.log("in Post Item delete post User ID:", user.id);
+  console.log("Post object:", post); // ← check the full object
+
+
     e.stopPropagation();
     try {
-      await deletePost(post.id);
+      await deletePost(post.id, user.id); 
       toast.success('Post deleted successfully');
       
       if (window.location.pathname.includes(`/posts/${post.id}`)) {
@@ -287,11 +295,16 @@ useEffect(() => {
       {/* Post Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-3">
-          <Avatar 
-            name={post.userId?.charAt(0)?.toUpperCase() || 'U'} 
-            size="md"
-            className="ring-2 ring-[var(--primary)] ring-opacity-50 mb-4"
-          />
+        <Avatar 
+  name={
+    userData?.firstName?.charAt(0)?.toUpperCase() || 
+    userData?.lastName?.charAt(0)?.toUpperCase() || 
+    userData?.displayName?.charAt(0)?.toUpperCase() || 
+    'U'
+  }
+  size="md"
+  className="ring-2 ring-[var(--primary)] ring-opacity-50 mb-4"
+/>
           <div>
             <div className="flex items-center space-x-2">
               <h3 className="text-white font-semibold text-base" >{userData?.firstName || userData?.lastName 
@@ -306,7 +319,7 @@ useEffect(() => {
                 </Badge>
               )}
             </div>
-            <p className="text-gray-400 text-sm ">{formatDate(post.createdAt)}</p>
+            <p className="text-gray-400 text-sm pr-40">{formatDate(post.createdAt)}</p>
           </div>
         </div>
         

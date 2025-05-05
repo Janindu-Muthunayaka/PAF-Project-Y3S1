@@ -16,7 +16,7 @@ import {
   FiSend
 } from 'react-icons/fi';
 import { postService } from '../../services/ish/api';
-import { commentService, replyService } from "../../services/ish/api";
+import { userService,commentService, replyService } from "../../services/ish/api";
 import { useUser } from '../../context/ish/UserContext';
 import { usePost } from '../../context/ish/PostContext';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -40,8 +40,6 @@ const PostDetail = () => {
   const [bookmarked, setBookmarked] = useState(false);
   const [showOptions, setShowOptions] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
-
-  const { userId } = { userId: "dummy" }
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState("");
   const [editingComment, setEditingComment] = useState(null);
@@ -49,24 +47,59 @@ const PostDetail = () => {
   const [replyContent, setReplyContent] = useState("");
   const [activeReply, setActiveReply] = useState(null);
 
+  const [usernames, setUsernames] = useState({});
+  const [postUsername, setPostUsername] = useState("");
+
+
+  
   useEffect(() => {
     fetchComments();
   }, []);
-
+  
   const fetchComments = async () => {
     try {
       const response = await commentService.getCommentsByPostId(postId);
-      setComments(response.data);
+      const commentsData = response.data;
+  
+      // Fetch replies for each comment and attach them
+      const commentsWithReplies = await Promise.all(
+        commentsData.map(async (comment) => {
+          const replyResponse = await replyService.getRepliesForComment(comment.id);
+          return {
+            ...comment,
+            replies: replyResponse.data,
+          };
+        })
+      );
+      
+      setComments(commentsWithReplies);
+  
+      // Fetch usernames for each unique userId
+      const newUsernames = {};
+      for (const comment of commentsWithReplies) {
+        const userId = comment.userId;
+        if (!usernames[userId]) {
+          const username = await getUsernameById(userId);
+          if (username) {
+            newUsernames[userId] = username;
+          }
+        }
+      }
+  
+      // Merge with any existing usernames
+      setUsernames((prev) => ({ ...prev, ...newUsernames }));
     } catch (error) {
       console.error("Error fetching comments:", error);
     }
   };
+  
+  
 
   const handleAddComment = async () => {
     if (!newComment.trim()) return;
-    console.log(`UserID: ${userId}`);
+    console.log(`UserID: ${user.id}`);
     try {
-      await commentService.createComment(postId, userId, newComment);
+      await commentService.createComment(postId, user.id, newComment);
       setNewComment("");
       fetchComments();
     } catch (error) {
@@ -74,31 +107,50 @@ const PostDetail = () => {
     }
   };
 
-  const handleUpdateComment = async (commentId) => {
-    if (!editContent.trim()) return;
-    try {
-      await commentService.updateComment(commentId, editContent);
-      setEditingComment(null);
-      setEditContent("");
-      fetchComments();
-    } catch (error) {
-      console.error("Error updating comment:", error);
+  const handleUpdateComment = async (commentId,commentUserId) => {
+    if (commentUserId === user.id) {
+      if (!editContent.trim()) return;
+      try {
+        await commentService.updateComment(commentId, editContent);
+        setEditingComment(null);
+        setEditContent("");
+        fetchComments();
+      } catch (error) {
+        console.error("Error updating comment:", error);
+      }
+    } else {
+      alert("You can only edit your own comments");
     }
   };
 
-  const handleDeleteComment = async (commentId) => {
-    try {
-      await commentService.deleteComment(commentId);
-      fetchComments();
-    } catch (error) {
-      console.error("Error deleting comment:", error);
+  const handleDeleteComment = async (commentId,commentUserId) => {
+    if (commentUserId === user.id) {
+      try {
+        await commentService.deleteComment(commentId);
+        fetchComments();
+      } catch (error) {
+        console.error("Error deleting comment:", error);
+      }
+    } else {
+      alert("You can only delete your own comments");
     }
   };
+  
+  const getUsernameById = async (userId) => {
+    try {
+      const response = await userService.getUserById(userId);
+      return response.data?.userName;
+    } catch (error) {
+      console.error("Error getting username by ID:", error);
+      return null;
+    }
+  };
+  
 
   const handleAddReply = async (commentId) => {
     if (!replyContent.trim()) return;
     try {
-      await replyService.createReply(commentId, userId, replyContent);
+      await replyService.createReply(commentId, user.id, replyContent);
       setReplyContent("");
       setActiveReply(null);
       fetchComments();
@@ -107,33 +159,51 @@ const PostDetail = () => {
     }
   };
 
-  const handleDeleteReply = async (replyId) => {
-    try {
-      await replyService.deleteReply(replyId);
-      fetchComments();
-    } catch (error) {
-      console.error("Error deleting reply:", error);
+  const handleDeleteReply = async (replyId,replyUserId) => {
+    if (replyUserId === user.id) {
+      try {
+        await replyService.deleteReply(replyId);
+        fetchComments();
+      } catch (error) {
+        console.error("Error deleting reply:", error);
+      }
+    } else {
+      alert("You can only delete your own replies");
     }
   };
 
 
   useEffect(() => {
-    const fetchPost = async () => {
-      try {
-        setLoading(true);
-        const response = await postService.getPostById(postId);
-        setPost(response.data);
-        setError(null);
-      } catch (err) {
-        setError('Failed to load post');
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    };
+  const fetchPost = async () => {
+    try {
+      setLoading(true);
+      const response = await postService.getPostById(postId);
+      const postData = response.data;
+      setPost(postData);
 
-    fetchPost();
-  }, [postId]);
+      // Fetch username for post author
+      if (postData.userId) {
+        const username = await getUsernameById(postData.userId);
+        if (username) {
+          setUsernames(prevUsernames => ({
+            ...prevUsernames,
+            [postData.userId]: username
+          }));
+        }
+      }
+
+      setError(null);
+    } catch (err) {
+      setError("Failed to load post");
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchPost();
+}, [postId]);
+
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -175,14 +245,25 @@ const PostDetail = () => {
     setConfirmDelete(false);
   };
 
-  const handleConfirmDelete = async () => {
+  const handleConfirmDelete = async (e) => {
+  
+    //testing to be removed
+
+  console.log("in Post Item delete post with ID:", post.id);
+  console.log("in Post Item delete post User ID:", user.id);
+  console.log("Post object:", post); // ← check the full object
+
+
+    e.stopPropagation();
     try {
-      await deletePost(postId);
+      await deletePost(post.id, user.id); 
       toast.success('Post deleted successfully');
-      navigate('/');
+      
+      if (window.location.pathname.includes(`/posts/${post.id}`)) {
+        navigate('/');
+      }
     } catch (error) {
       toast.error('Failed to delete post');
-      console.error('Failed to delete post:', error);
     }
     setConfirmDelete(false);
   };
@@ -294,7 +375,7 @@ const PostDetail = () => {
             className="mr-4"
           />
           <div>
-            <h3 className="font-semibold text-gray-900 dark:text-white text-lg text-left">User</h3>
+            <h3 className="font-semibold text-gray-900 dark:text-white text-lg text-left">{usernames[post.userId]}</h3>
             <p className="text-gray-500 dark:text-gray-400 text-sm">{formatDate(post.createdAt)}</p>
           </div>
           
@@ -427,7 +508,7 @@ const PostDetail = () => {
           </button>
         </div>
       </Card>
-
+      <br></br>
       {/* Comments Section */}
       <div className="p-4 bg-gray-800 rounded-lg border border-gray-700 text-white">
       <h3 className="text-lg font-medium text-gray-900 dark:text-gray">Comments</h3>
@@ -448,13 +529,14 @@ const PostDetail = () => {
                     value={editContent}
                     onChange={(e) => setEditContent(e.target.value)}
                   />
-                  <Button className="mt-2" onClick={() => handleUpdateComment(comment.id)}>
+                  <Button className="mt-2" onClick={() => handleUpdateComment(comment.id,comment.userId)}>
                     Update Comment
                   </Button>
                 </div>
               ) : (
                 <div className="flex items-center space-x-2 text-gray-900 dark:text-white">
-                  <p className="font-semibold">{comment.userId}:</p>
+                  {/* detail of user Section */}
+                  <p className="font-semibold">{usernames[comment.userId] }:</p>
                   <p>{comment.description}</p>
                 </div>
               )}
@@ -465,10 +547,11 @@ const PostDetail = () => {
                 <button className="text-green-500 text-sm" onClick={() => { setEditingComment(comment.id); setEditContent(comment.content); }}>
                   <FiEdit />
                 </button>
-                <button className="text-red-500 text-sm" onClick={() => handleDeleteComment(comment.id)}>
+                <button className="text-red-500 text-sm" onClick={() => handleDeleteComment(comment.id,comment.userId)}>
                   <FiTrash />
                 </button>
               </div>
+              {/* Reply Section */}
               {activeReply === comment.id && (
                 <div className="mt-2">
                   <textarea
@@ -481,12 +564,15 @@ const PostDetail = () => {
                   </Button>
                 </div>
               )}
+              {/* Render Replies under the Comment */}
               {comment.replies && comment.replies.length > 0 && (
-                <ul className="mt-2 space-y-2 pl-4 border-l">
+                <ul className="mt-2 space-y-2 pl-6 border-l border-gray-600">
                   {comment.replies.map((reply) => (
-                    <li key={reply.id} className="flex justify-between items-center">
-                      <p className="text-gray-700 dark:text-gray-300">{reply.description}</p>
-                      <button className="text-red-500 text-sm" onClick={() => handleDeleteReply(reply.id)}>
+                    <li key={reply.id} className="flex justify-between items-center text-sm text-gray-300">
+                      <p>
+                        <span className="font-medium">{usernames[reply.userId] || 'User'}:</span> {reply.description}
+                      </p>
+                      <button className="text-red-400 text-xs" onClick={() => handleDeleteReply(reply.id,reply.userId)}>
                         <FiTrash />
                       </button>
                     </li>

@@ -14,8 +14,6 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import com.skillora.app.model.Bumal.User;
 import com.skillora.app.service.Bumal.UserService;
 
-import jakarta.servlet.http.HttpSession;
-
 @RequestMapping("/api")
 @RestController 
 public class SessionDataFetch {

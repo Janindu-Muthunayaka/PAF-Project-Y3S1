@@ -7,15 +7,12 @@ import com.skillora.app.model.dto.PostRequest;
 import com.skillora.app.model.dto.PostResponse;
 import com.skillora.app.service.Ish.PostService;
 
-import jakarta.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.multipart.MultipartFile;
 
 
@@ -23,7 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/posts")
+@RequestMapping("api/posts")
 @CrossOrigin(origins = "*")
 public class PostController {
     
@@ -113,29 +110,46 @@ public ResponseEntity<PostResponse> createPost(
         }
     }
     
+    
     @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<PostResponse> updatePost(
-            @PathVariable String id,
-            @RequestPart("post") PostRequest postRequest,
-            @RequestPart(value = "files", required = false) List<MultipartFile> files) {
+            @PathVariable String id,                  // Post ID to update
+            @RequestPart("post") PostRequest postRequest,   // Post data in JSON
+            @RequestPart(value = "files", required = false) List<MultipartFile> files,  // Files (optional)
+            @RequestHeader("userId") String userId) {      // User ID from headers
+            System.out.println("Updating post with ID: " + id);
+            System.out.println("Received userId: " + userId);
+            System.out.println("PostRequest: " + postRequest);
+            System.out.println("Files count: " + (files != null ? files.size() : "No files"));
+            System.out.println("Controller outside update try");
         try {
-            // For now, we'll use a dummy user ID
-            String userId = "dummy-user-id";
+            // Logging received data for debugging
+            System.out.println("Controller inside update try");
+
+            // Call to PostService for business logic
             PostResponse updatedPost = postService.updatePost(id, postRequest, files, userId);
+
+            // Return the updated post response
             return new ResponseEntity<>(updatedPost, HttpStatus.OK);
         } catch (Exception e) {
+            // Handle errors and provide meaningful feedback
+            System.out.println("Controller inside update catch");
+            System.err.println("Error updating post: " + e.getMessage());
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
     
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletePost(@PathVariable String id) {
+    public ResponseEntity<Void> deletePost(@PathVariable String id, @RequestHeader("userId") String userId) {
+        System.out.println("Received DELETE request for post ID: " + id);
+        System.out.println("User ID from header: " + userId);
         try {
-            // For now, we'll use a dummy user ID
-            String userId = "dummy-user-id";
             postService.deletePost(id, userId);
+            System.out.println("Controller inside delwte try");
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         } catch (Exception e) {
+            System.out.println("Controller inside delete catch");
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

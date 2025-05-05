@@ -21,7 +21,7 @@ import './App.css';
 
 // Protected route component
 const ProtectedRoute = ({ children }) => {
-  const userData = localStorage.getItem('userData');
+  const userData = sessionStorage.getItem('userData');
   
   if (!userData) {
     // Redirect to login if not authenticated
@@ -36,8 +36,8 @@ function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   
   useEffect(() => {
-    // Check if userData exists in localStorage
-    const userData = localStorage.getItem('userData');
+    // Check if userData exists in sessionStorage
+    const userData = sessionStorage.getItem('userData');
     setIsAuthenticated(!!userData);
   }, []);
 
