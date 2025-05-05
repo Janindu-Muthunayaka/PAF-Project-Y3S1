@@ -74,14 +74,28 @@ const PostDetail = () => {
       
       setComments(commentsWithReplies);
   
-      // Fetch usernames for each unique userId
+      // Fetch usernames for each unique userId (both comments and replies)
       const newUsernames = {};
       for (const comment of commentsWithReplies) {
-        const userId = comment.userId;
-        if (!usernames[userId]) {
-          const username = await getUsernameById(userId);
+        // Get username for comment author
+        const commentUserId = comment.userId;
+        if (!usernames[commentUserId]) {
+          const username = await getUsernameById(commentUserId);
           if (username) {
-            newUsernames[userId] = username;
+            newUsernames[commentUserId] = username;
+          }
+        }
+
+        // Get usernames for reply authors
+        if (comment.replies) {
+          for (const reply of comment.replies) {
+            const replyUserId = reply.userId;
+            if (!usernames[replyUserId]) {
+              const username = await getUsernameById(replyUserId);
+              if (username) {
+                newUsernames[replyUserId] = username;
+              }
+            }
           }
         }
       }

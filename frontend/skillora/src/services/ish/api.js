@@ -130,7 +130,8 @@ export const commentService = {
 export const replyService = {
 
   createReply: (commentId, userId, description) => {
-    return axios.post(`${API_URL}/replies?commentId=${commentId}&description=${description}&userId=${userId}`);
+    const replyData = { commentId, userId, description };
+    return axios.post(`${API_URL}/replies`, replyData);
   },
 
   getRepliesForComment: (commentId) => {
