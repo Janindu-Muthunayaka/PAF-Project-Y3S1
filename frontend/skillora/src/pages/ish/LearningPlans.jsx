@@ -1,11 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { FiEdit, FiTrash } from 'react-icons/fi';
+import { Link } from 'react-router-dom';
 import axios from 'axios';
 
 const LearningPlans = () => {
   const [plans, setPlans] = useState([]);
-  const navigate = useNavigate();
 
   // Fetch plans from the backend
   const fetchPlans = async () => {
@@ -14,20 +12,6 @@ const LearningPlans = () => {
       setPlans(response.data);
     } catch (err) {
       console.error('Failed to fetch plans:', err);
-    }
-  };
-
-  // Handle delete plan
-  const handleDelete = async (id) => {
-    if (!window.confirm('Are you sure you want to delete this plan?')) return;
-
-    try {
-      await axios.delete(`http://localhost:8080/api/plans/${id}`);
-      setPlans((prev) => prev.filter((plan) => plan.id !== id));
-      alert('Plan deleted successfully!');
-    } catch (err) {
-      console.error('Failed to delete plan:', err);
-      alert('Failed to delete plan.');
     }
   };
 
@@ -76,24 +60,6 @@ const LearningPlans = () => {
                     </a>
                   </p>
                 )}
-                <div className="flex justify-between mt-4">
-                  {/* Update Icon */}
-                  <button
-                    onClick={() => navigate(`/update-plan/${plan.id}`)}
-                    className="flex items-center px-3 py-2 bg-yellow-500 text-white rounded-md hover:bg-yellow-600"
-                  >
-                    <FiEdit className="mr-2" />
-                    Update
-                  </button>
-                  {/* Delete Icon */}
-                  <button
-                    onClick={() => handleDelete(plan.id)}
-                    className="flex items-center px-3 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
-                  >
-                    <FiTrash className="mr-2" />
-                    Delete
-                  </button>
-                </div>
               </div>
             </div>
           ))}

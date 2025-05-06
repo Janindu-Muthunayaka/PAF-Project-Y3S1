@@ -1,15 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useUser } from '../../context/ish/UserContext';
 
 const ViewPlans = () => {
   const [plans, setPlans] = useState([]);
   const navigate = useNavigate();
+  const { user } = useUser();
 
   const fetchPlans = async () => {
     try {
       const res = await fetch('http://localhost:8080/api/plans');
       const data = await res.json();
-      setPlans(data);
+      // Filter plans to only show the logged-in user's plans
+      const userPlans = data.filter(plan => plan.userId === user.id);
+      setPlans(userPlans);
     } catch (err) {
       console.error('Failed to fetch plans', err);
     }
@@ -35,8 +39,14 @@ const ViewPlans = () => {
   };
 
   useEffect(() => {
-    fetchPlans();
-  }, []);
+    if (user?.id) {
+      fetchPlans();
+    }
+  }, [user]);
+
+  if (!user?.id) {
+    return <div className="p-6 text-center">Please log in to view your plans.</div>;
+  }
 
   return (
     <div className="p-6 max-w-7xl mx-auto mt-10 bg-white rounded-2xl shadow-md">
@@ -93,7 +103,7 @@ const ViewPlans = () => {
             {plans.length === 0 && (
               <tr>
                 <td colSpan="6" className="p-4 text-center text-gray-500">
-                  No plans found.
+                  No plans found. Create your first learning plan!
                 </td>
               </tr>
             )}
