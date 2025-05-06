@@ -37,7 +37,15 @@ const LearningPlans = () => {
 
   return (
     <div className="max-w-5xl mx-auto">
-      <div className="flex justify-end items-center mb-6">
+      <div className="flex justify-end items-center mb-6 space-x-4">
+        {/* My Learning Plans Button */}
+        <Link
+          to="/learning-plans/view"
+          className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+        >
+          My Learning Plans
+        </Link>
+
         {/* Create Plan Button */}
         <Link
           to="/learning-plans/create"
@@ -48,7 +56,7 @@ const LearningPlans = () => {
       </div>
 
       <div className="bg-white rounded-lg shadow p-6">
-        <h2 className="text-xl font-semibold mb-4">My Learning Plans</h2>
+        <h2 className="text-xl font-semibold mb-4">All Learning Plans</h2>
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {plans.map((plan) => (
             <div key={plan.id} className="border rounded-lg overflow-hidden hover:shadow-md transition-shadow">
