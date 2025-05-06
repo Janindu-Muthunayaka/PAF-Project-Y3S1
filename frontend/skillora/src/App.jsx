@@ -17,6 +17,9 @@ import PostDetail from './pages/ish/PostDetail';
 import NotFound from './pages/ish/NotFound';
 import LoginPage from './pages/Bumal/LoginPage';
 import RegisterPage from './pages/Bumal/Registerpage';
+import ViewPlans from './pages/Nadee/ViewPlans';
+import CreatePlan from './pages/Nadee/Plans';
+import UpdatePlan from './pages/Nadee/UpdatePlan';
 import { userService } from './services/ish/api';
 import './App.css';
 
@@ -74,94 +77,125 @@ const AppContent = () => {
     checkAuth();
   }, [location]);
 
-  // Don't redirect if we're on the login page or OAuth2 callback
-  // This prevents redirect loops during authentication
-  if (!isAuthenticated && 
-      location.pathname !== '/login' && 
-      location.pathname !== '/register' && 
-      !location.search.includes('code=')) {
-    return <Navigate to="/login" replace />;
-  }
-
-  // Prevent route rendering until auth check is done
-  if (!isAuthenticated) return null;
-
   return (
     <ThemeProvider>
       <UserProvider>
         <PostProvider>
           <Routes>
             {/* Public routes - accessible without authentication */}
-            <Route path="/login" element={
-              isAuthenticated ? <Navigate to="/" replace /> : <LoginPage />
-            } />
-            <Route path="/register" element={
-              isAuthenticated ? <Navigate to="/" replace /> : <RegisterPage />
-            } />
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/register" element={<RegisterPage />} />
             
             {/* Protected routes - require authentication */}
             <Route path="/" element={
-              <Layout>
-                <Home />
-              </Layout>
+              isAuthenticated ? (
+                <Layout>
+                  <Home />
+                </Layout>
+              ) : (
+                <Navigate to="/login" replace />
+              )
             } />
             <Route path="/profile/:userId" element={
-              <ProtectedRoute>
+              isAuthenticated ? (
                 <Layout>
                   <Profile />
                 </Layout>
-              </ProtectedRoute>
+              ) : (
+                <Navigate to="/login" replace />
+              )
             } />
             <Route path="/explore" element={
-              <ProtectedRoute>
+              isAuthenticated ? (
                 <Layout>
                   <Explore />
                 </Layout>
-              </ProtectedRoute>
+              ) : (
+                <Navigate to="/login" replace />
+              )
             } />
             <Route path="/learning-plans" element={
-              <ProtectedRoute>
+              isAuthenticated ? (
                 <Layout>
                   <LearningPlans />
                 </Layout>
-              </ProtectedRoute>
+              ) : (
+                <Navigate to="/login" replace />
+              )
+            } />
+            <Route path="/learning-plans/view" element={
+              isAuthenticated ? (
+                <Layout>
+                  <ViewPlans />
+                </Layout>
+              ) : (
+                <Navigate to="/login" replace />
+              )
+            } />
+            <Route path="/learning-plans/create" element={
+              isAuthenticated ? (
+                <Layout>
+                  <CreatePlan />
+                </Layout>
+              ) : (
+                <Navigate to="/login" replace />
+              )
+            } />
+            <Route path="/update-plan/:planId" element={
+              isAuthenticated ? (
+                <Layout>
+                  <UpdatePlan />
+                </Layout>
+              ) : (
+                <Navigate to="/login" replace />
+              )
             } />
             <Route path="/network" element={
-              <ProtectedRoute>
+              isAuthenticated ? (
                 <Layout>
                   <Network />
                 </Layout>
-              </ProtectedRoute>
+              ) : (
+                <Navigate to="/login" replace />
+              )
             } />
             <Route path="/create-post" element={
-              <ProtectedRoute>
+              isAuthenticated ? (
                 <Layout>
                   <CreatePost />
                 </Layout>
-              </ProtectedRoute>
+              ) : (
+                <Navigate to="/login" replace />
+              )
             } />
             <Route path="/posts/:postId" element={
-              <ProtectedRoute>
+              isAuthenticated ? (
                 <Layout>
                   <PostDetail />
                 </Layout>
-              </ProtectedRoute>
+              ) : (
+                <Navigate to="/login" replace />
+              )
             } />
             <Route path="/posts/:postId/edit" element={
-              <ProtectedRoute>
+              isAuthenticated ? (
                 <Layout>
                   <EditPost />
                 </Layout>
-              </ProtectedRoute>
+              ) : (
+                <Navigate to="/login" replace />
+              )
             } />
             
-            {/* Not found route - also protected */}
+            {/* Not found route */}
             <Route path="*" element={
-              <ProtectedRoute>
+              isAuthenticated ? (
                 <Layout>
                   <NotFound />
                 </Layout>
-              </ProtectedRoute>
+              ) : (
+                <Navigate to="/login" replace />
+              )
             } />
           </Routes>
           <ToastContainer
