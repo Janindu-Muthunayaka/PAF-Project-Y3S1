@@ -23,12 +23,9 @@ import './App.css';
 // Protected route component - checks if user is authenticated before rendering protected content
 const ProtectedRoute = ({ children }) => {
   const userData = sessionStorage.getItem('userData');
-  
   if (!userData) {
-    // Redirect to login if not authenticated
     return <Navigate to="/login" replace />;
   }
-  
   return children;
 };
 
@@ -85,6 +82,9 @@ const AppContent = () => {
       !location.search.includes('code=')) {
     return <Navigate to="/login" replace />;
   }
+
+  // Prevent route rendering until auth check is done
+  if (!isAuthenticated) return null;
 
   return (
     <ThemeProvider>
