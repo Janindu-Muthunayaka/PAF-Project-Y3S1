@@ -18,31 +18,31 @@ import NotFound from './pages/ish/NotFound';
 import LoginPage from './pages/Bumal/LoginPage';
 import RegisterPage from './pages/Bumal/Registerpage';
 import Plans from './pages/Nadee/Plans';  
-import ViewPlans from './pages/Nadee/ViewPlans'; // Import ViewPlans
-import UpdatePlan from './pages/Nadee/UpdatePlan'; // Import UpdatePlan
+import ViewPlans from './pages/Nadee/ViewPlans';
+import UpdatePlan from './pages/Nadee/UpdatePlan';
 import './App.css';
 
-// Protected route component
+// ✅ Protected route using direct sessionStorage check
 const ProtectedRoute = ({ children }) => {
   const userData = sessionStorage.getItem('userData');
-  
   if (!userData) {
-    // Redirect to login if not authenticated
     return <Navigate to="/login" replace />;
   }
-  
   return children;
 };
 
 function App() {
-  // Check if the user is authenticated
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  
+  const [authChecked, setAuthChecked] = useState(false);
+
   useEffect(() => {
-    // Check if userData exists in sessionStorage
     const userData = sessionStorage.getItem('userData');
     setIsAuthenticated(!!userData);
+    setAuthChecked(true);
   }, []);
+
+  // ✅ Prevent route rendering until auth check is done
+  if (!authChecked) return null;
 
   return (
     <ThemeProvider>
@@ -57,103 +57,70 @@ function App() {
               <Route path="/register" element={
                 isAuthenticated ? <Navigate to="/" replace /> : <RegisterPage />
               } />
-              
-              {/* Protected routes wrapped with Layout */}
+
+              {/* Protected routes */}
               <Route path="/" element={
                 <ProtectedRoute>
-                  <Layout>
-                    <Home />
-                  </Layout>
+                  <Layout><Home /></Layout>
                 </ProtectedRoute>
               } />
               <Route path="/profile/:userId" element={
                 <ProtectedRoute>
-                  <Layout>
-                    <Profile />
-                  </Layout>
+                  <Layout><Profile /></Layout>
                 </ProtectedRoute>
               } />
               <Route path="/explore" element={
                 <ProtectedRoute>
-                  <Layout>
-                    <Explore />
-                  </Layout>
+                  <Layout><Explore /></Layout>
                 </ProtectedRoute>
               } />
               <Route path="/learning-plans" element={
                 <ProtectedRoute>
-                  <Layout>
-                    <LearningPlans />
-                  </Layout>
+                  <Layout><LearningPlans /></Layout>
                 </ProtectedRoute>
               } />
-
               <Route path="/learning-plans/create" element={
                 <ProtectedRoute>
-                  <Layout>
-                    <Plans />
-                  </Layout>
+                  <Layout><Plans /></Layout>
                 </ProtectedRoute>
               } />
-
               <Route path="/learning-plans/view" element={
                 <ProtectedRoute>
-                  <Layout>
-                    <ViewPlans />
-                  </Layout>
+                  <Layout><ViewPlans /></Layout>
                 </ProtectedRoute>
               } />
-
-              {/* Add the route for UpdatePlan */}
               <Route path="/update-plan/:planId" element={
                 <ProtectedRoute>
-                  <Layout>
-                    <UpdatePlan />
-                  </Layout>
+                  <Layout><UpdatePlan /></Layout>
                 </ProtectedRoute>
               } />
-              
               <Route path="/network" element={
                 <ProtectedRoute>
-                  <Layout>
-                    <Network />
-                  </Layout>
+                  <Layout><Network /></Layout>
                 </ProtectedRoute>
               } />
               <Route path="/create-post" element={
                 <ProtectedRoute>
-                  <Layout>
-                    <CreatePost />
-                  </Layout>
+                  <Layout><CreatePost /></Layout>
                 </ProtectedRoute>
               } />
               <Route path="/posts/:postId" element={
                 <ProtectedRoute>
-                  <Layout>
-                    <PostDetail />
-                  </Layout>
+                  <Layout><PostDetail /></Layout>
                 </ProtectedRoute>
               } />
               <Route path="/posts/:postId/edit" element={
                 <ProtectedRoute>
-                  <Layout>
-                    <EditPost />
-                  </Layout>
+                  <Layout><EditPost /></Layout>
                 </ProtectedRoute>
               } />
-              
-              {/* Not found route - also protected */}
               <Route path="*" element={
                 <ProtectedRoute>
-                  <Layout>
-                    <NotFound />
-                  </Layout>
+                  <Layout><NotFound /></Layout>
                 </ProtectedRoute>
               } />
-              
-              {/* Default redirect to login */}
-              <Route path="/" element={<Navigate to="/login" replace />} />
             </Routes>
+
             <ToastContainer
               position="bottom-right"
               autoClose={5000}
