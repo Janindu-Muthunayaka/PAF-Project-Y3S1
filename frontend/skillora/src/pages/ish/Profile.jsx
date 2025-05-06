@@ -267,21 +267,7 @@ const Profile = () => {
 
 {activeTab === 'learning' && <ViewPlans />} {/* Render ViewPlans when Learning Plans tab is active */}
 
-{activeTab === 'skills' && (
-  <SkillsSection
-    userId={profileData?.id} // Make sure `id` is correct, or use profileData?.userId
-    skills={profileData?.skills || []}
-    isCurrentUser={isCurrentUser}
-    onAddSkill={(newSkill) => {
-      const updatedSkills = [...(profileData?.skills || []), newSkill];
-      setProfileData({ ...profileData, skills: updatedSkills });
-    }}
-    onDeleteSkill={(skillName) => {
-      const updatedSkills = profileData?.skills?.filter(s => s.skillName !== skillName);
-      setProfileData({ ...profileData, skills: updatedSkills });
-    }}
-  />
-)}
+
 
 
 
