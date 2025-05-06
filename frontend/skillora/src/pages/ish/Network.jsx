@@ -93,7 +93,7 @@ const Network = () => {
       {/* Current User Stats */}
       <div className="mb-4">
         <p className="text-gray-700 text-lg">
-          You are follow <span className="font-semibold">{followingCount}</span> {followingCount === 1 ? 'person' : 'people'} and have <span className="font-semibold">{followersCount}</span> {followersCount === 1 ? 'following' : 'following'}
+          You are following <span className="font-semibold">{followingCount}</span> {followingCount === 1 ? 'person' : 'people'} and have <span className="font-semibold">{followersCount}</span> {followersCount === 1 ? 'follow' : 'followers'}
         </p>
       </div>
 
