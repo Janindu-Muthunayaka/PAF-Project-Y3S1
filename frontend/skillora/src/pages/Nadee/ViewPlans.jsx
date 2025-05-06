@@ -40,7 +40,7 @@ const ViewPlans = () => {
 
   return (
     <div className="p-6 max-w-7xl mx-auto mt-10 bg-white rounded-2xl shadow-md">
-      <h2 className="text-2xl font-bold mb-6">All Plans</h2>
+      <h2 className="text-2xl font-bold mb-6">My Learning Plans</h2>
       <div className="overflow-x-auto">
         <table className="min-w-full table-auto border">
           <thead>

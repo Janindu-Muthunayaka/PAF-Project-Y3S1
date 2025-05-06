@@ -245,10 +245,10 @@ export const planService = {
 // Function to get user data from the session
 export const sessionId = {
   getUserData: () => fetch('/api/users/session/user', {
-    credentials: 'include' // ✅ sends cookies for session
+    credentials: 'include' // 
   }).then(res => {
-    if (!res.ok) throw new Error('Failed to fetch session user'); // ✅ proper error handling
-    return res.json(); // ✅ parse JSON if successful
+    if (!res.ok) throw new Error('Failed to fetch session user'); // proper error handling
+    return res.json(); //  parse JSON if successful
   }),
 };
 
