@@ -75,13 +75,20 @@ public class UserController {
 
     @PostMapping("/googleSignUp")
     public ResponseEntity<?> registerUserByGoogle(@RequestBody GoogleSignUpDto gUser) {
+        System.out.println("heloo");
         // Check if username or email already exists
-        System.out.print(gUser.getEmail());
+        System.out.println("\n[UserController.java] Google SignUp Request:");
+        System.out.println("Location: /api/users/googleSignUp");
+        System.out.println("User Details: " + gUser);
+        
         User userR = userService.findByEmail(gUser.getEmail());
-        System.out.print(userR);
+        System.out.println("Existing User Check: " + (userR != null ? "Found" : "Not Found"));
+        
         if (userService.findByEmail(gUser.getEmail()) != null) {
+            System.out.println("Returning existing user: " + userR);
             return ResponseEntity.status(HttpStatus.CREATED).body(userR);
         }
+        
         User newUser = new User();
         newUser.setUserName(gUser.getUserName());
         newUser.setEmail(gUser.getEmail());
@@ -94,12 +101,13 @@ public class UserController {
 
         // Register the user
         User registeredUser = userService.register(newUser);
+        System.out.println("New User Created: " + registeredUser);
         
         // Create HATEOAS response with self link
         EntityModel<User> resource = EntityModel.of(registeredUser);
         resource.add(WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(UserController.class).registerUser(newUser)).withSelfRel());
 
-        // Return the response with created status and HATEOAS links
+        System.out.println("Final Response: " + resource);
         return ResponseEntity.status(HttpStatus.CREATED).body(resource);
     }
 
@@ -255,19 +263,28 @@ public class UserController {
 
     @GetMapping("/session/user")
     public ResponseEntity<?> getSessionUser() {
+        System.out.println("\n[UserController.java] Getting Session User");
+        System.out.println("Location: /api/users/session/user");
+        
         ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
         HttpSession session = attr.getRequest().getSession(false);
     
         if (session == null || session.getAttribute("userId") == null) {
+            System.out.println("No session or userId found");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not logged in");
         }
     
         String userId = (String) session.getAttribute("userId");
-        Optional<User> user = userService.findById(userId); // make sure this takes a String
-    
+        System.out.println("Session userId: " + userId);
+        
+        Optional<User> user = userService.findById(userId);
+        System.out.println("User found: " + (user.isPresent() ? "Yes" : "No"));
+
         if (user.isPresent()) {
+            System.out.println("Returning user data: " + user.get());
             return ResponseEntity.ok(user.get());
         } else {
+            System.out.println("User not found in database");
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
         }
     }
