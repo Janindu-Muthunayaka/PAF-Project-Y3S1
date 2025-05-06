@@ -22,9 +22,9 @@ public class ReplyController {
 
     // Create a reply
     @PostMapping
-    public ResponseEntity<Reply> createReply(@RequestParam String commentId,  @RequestParam String description, @RequestParam String userId) {
-        Reply reply = replyService.createReply(commentId, description, userId);
-        return ResponseEntity.ok(reply);
+    public ResponseEntity<Reply> createReply(@RequestBody Reply reply) {
+        Reply createdReply = replyService.createReply(reply.getCommentId(), reply.getDescription(), reply.getUserId());
+        return ResponseEntity.ok(createdReply);
     }
 
     //replies for a comment

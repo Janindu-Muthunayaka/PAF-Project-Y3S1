@@ -18,6 +18,7 @@ import {
 } from 'react-icons/fi';
 import { useUser } from '../../context/ish/UserContext';
 import Avatar from './ui/Avatar';
+import { userService } from '../../services/ish/api';
 
 const Layout = ({ children }) => {
   const { user } = useUser();
@@ -86,11 +87,15 @@ const Layout = ({ children }) => {
     { path: '/network', icon: <FiUsers className="w-5 h-5" />, text: 'Network' },
   ];
 
-  //remove session storage when logging out
-
-  const handleSignOut = () => {
-    sessionStorage.removeItem('userData'); 
-    navigate('/login'); 
+  const handleLogout = async () => {
+    try {
+      console.log("\n[Layout.jsx] Logging out");
+      await userService.logout();
+      console.log("Logout successful");
+      navigate('/login');
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
   };
 
   return (
@@ -236,7 +241,7 @@ const Layout = ({ children }) => {
                         className="flex w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-[var(--dark-surface-light)] hover:text-white"
                         onClick={() => {
                           setShowUserMenu(false);
-                          handleSignOut();
+                          handleLogout();
                         }}
                       >
                         <FiLogOut className="mr-3 h-5 w-5 text-gray-400" />
