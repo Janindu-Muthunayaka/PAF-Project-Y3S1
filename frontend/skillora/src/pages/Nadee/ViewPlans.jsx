@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useUser } from '../../context/ish/UserContext';
 
 const ViewPlans = () => {
@@ -50,7 +50,23 @@ const ViewPlans = () => {
 
   return (
     <div className="p-6 max-w-7xl mx-auto mt-10 bg-white rounded-2xl shadow-md">
-      <h2 className="text-2xl font-bold mb-6">My Learning Plans</h2>
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-2xl font-bold">My Learning Plans</h2>
+        <div className="space-x-4">
+          <Link
+            to="/learning-plans"
+            className="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 transition-colors"
+          >
+            All Plans
+          </Link>
+          <Link
+            to="/learning-plans/create"
+            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+          >
+            Create Plan
+          </Link>
+        </div>
+      </div>
       <div className="overflow-x-auto">
         <table className="min-w-full table-auto border">
           <thead>
