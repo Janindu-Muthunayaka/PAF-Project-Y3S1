@@ -67,7 +67,8 @@ public class PlanServiceImpl implements PlanService {
             updateToPlan.setName(plans.getName());
             updateToPlan.setDescription(plans.getDescription());
             updateToPlan.setDueDate(plans.getDueDate());
-            updateToPlan.setUrl(plans.getUrl()); // Add URL field
+            updateToPlan.setUrl(plans.getUrl());
+            updateToPlan.setCompleted(plans.getCompleted());
             updateToPlan.setUpdatedAt(new Date(System.currentTimeMillis()));
 
             planRepo.save(updateToPlan);
