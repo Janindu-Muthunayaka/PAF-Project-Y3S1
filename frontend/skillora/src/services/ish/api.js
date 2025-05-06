@@ -17,7 +17,7 @@ export const postService = {
   getUserPosts: (userId) => api.get(`/posts/user/${userId}`),
   getUserPinnedPosts: (userId) => api.get(`/posts/user/${userId}/pinned`),
   getPostsByCategory: (category) => api.get(`/posts/category/${category}`),
-  createPost: (id,postData, files) => {
+  createPost: (id, postData, files) => {
     const formData = new FormData();
     const postBlob = new Blob([JSON.stringify(postData)], { type: 'application/json' });
     
@@ -41,12 +41,10 @@ export const postService = {
 
     formData.append('post', postBlob);
 
-
     //testing to be removed
     console.log("Updating post with ID:", id);
     console.log("User ID:", userId);
     console.log("Post Data:", postData);
-
 
     if (files && files.length > 0) {
         files.forEach(file => {
@@ -71,7 +69,7 @@ deletePost: (userId, id) => {
   headers: { 'userId': userId },
   }).catch(err => {
     console.error("Delete failed in api.js:", err);
-    throw err; // rethrow so it’s caught in the frontend try/catch
+    throw err; // rethrow so it's caught in the frontend try/catch
   });
 },
 };
@@ -132,7 +130,8 @@ export const commentService = {
 export const replyService = {
 
   createReply: (commentId, userId, description) => {
-    return axios.post(`${API_URL}/replies?commentId=${commentId}&description=${description}&userId=${userId}`);
+    const replyData = { commentId, userId, description };
+    return axios.post(`${API_URL}/replies`, replyData);
   },
 
   getRepliesForComment: (commentId) => {
@@ -158,6 +157,15 @@ export const userService = {
   // Login
   login: (credentials) => api.post('/users/login', credentials),
   
+  // Logout
+  logout: () => {
+    sessionStorage.removeItem('userData');
+    return api.post('/users/logout');
+  },
+  
+  // Get session user
+  getSessionUser: () => api.get('/users/session/user'),
+  
   // Get all users
   getAllUsers: () => api.get('/users/allUsers'),
   
@@ -175,6 +183,9 @@ export const userService = {
   
   // Get followers
   getFollowers: (userId) => api.get(`/users/myFollowers/${userId}`),
+
+  // Get following
+  getFollowing: (userId) => api.get(`/users/myFollowing/${userId}`),
   
   // Unfollow a user
   unfollowUser: (user1Id, user2Id) => {
@@ -195,22 +206,21 @@ export const userService = {
   deleteUser: (userId) => api.delete(`/users/${userId}`),
   
   // Get usernames by IDs
-  getUsernames: (userIds) => api.post('/users/getUsersNames', userIds)
+  getUsernames: (userIds) => api.post('/users/getUsersNames', userIds),
+
+  // OAuth2 user data
+  getOAuth2User: () => api.get('/oauth2/user'),
 };
 
 
 // Function to get user data from the session
 export const sessionId = {
-  // Function to get user data from the session
-  getUserData: async () => {
-    try {
-      const response = await api.get('/getUserData'); // Make sure the URL matches your backend route
-
-      return response.data; // This will be the user data returned from your backend
-    } catch (error) {
-      console.error('Error fetching user data:', error);
-      throw error; // Optionally, you can throw the error to handle it later in the frontend
-    }
-  },
+  getUserData: () => fetch('/api/users/session/user', {
+    credentials: 'include' // ✅ sends cookies for session
+  }).then(res => {
+    if (!res.ok) throw new Error('Failed to fetch session user'); // ✅ proper error handling
+    return res.json(); // ✅ parse JSON if successful
+  }),
 };
+
 export default api;

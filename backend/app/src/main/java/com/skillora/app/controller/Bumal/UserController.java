@@ -45,6 +45,23 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Email already exists");
         }
 
+        // Initialize required fields if null
+        if (user.getBio() == null) {
+            user.setBio("");
+        }
+        if (user.getFollowers() == null) {
+            user.setFollowers(new ArrayList<>());
+        }
+        if (user.getFollowing() == null) {
+            user.setFollowing(new ArrayList<>());
+        }
+        if (user.getProfilePicURL() == null) {
+            user.setProfilePicURL("");
+        }
+        if (user.getUserType() == null) {
+            user.setUserType("User");
+        }
+
         // Register the user
         User registeredUser = userService.register(user);
 
@@ -58,28 +75,39 @@ public class UserController {
 
     @PostMapping("/googleSignUp")
     public ResponseEntity<?> registerUserByGoogle(@RequestBody GoogleSignUpDto gUser) {
+        System.out.println("heloo");
         // Check if username or email already exists
-        System.out.print(gUser.getEmail());
+        System.out.println("\n[UserController.java] Google SignUp Request:");
+        System.out.println("Location: /api/users/googleSignUp");
+        System.out.println("User Details: " + gUser);
+        
         User userR = userService.findByEmail(gUser.getEmail());
-        System.out.print(userR);
+        System.out.println("Existing User Check: " + (userR != null ? "Found" : "Not Found"));
+        
         if (userService.findByEmail(gUser.getEmail()) != null) {
+            System.out.println("Returning existing user: " + userR);
             return ResponseEntity.status(HttpStatus.CREATED).body(userR);
         }
+        
         User newUser = new User();
         newUser.setUserName(gUser.getUserName());
         newUser.setEmail(gUser.getEmail());
-        newUser.setProfilePicURL(gUser.getProfileImageUrl());
+        newUser.setProfilePicURL(gUser.getProfileImageUrl() != null ? gUser.getProfileImageUrl() : "");
         newUser.setFirstName(gUser.getName());
         newUser.setUserType("User");
+        newUser.setBio(gUser.getBio() != null ? gUser.getBio() : "");
+        newUser.setFollowers(new ArrayList<>());
+        newUser.setFollowing(new ArrayList<>());
 
         // Register the user
         User registeredUser = userService.register(newUser);
+        System.out.println("New User Created: " + registeredUser);
         
         // Create HATEOAS response with self link
         EntityModel<User> resource = EntityModel.of(registeredUser);
         resource.add(WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(UserController.class).registerUser(newUser)).withSelfRel());
 
-        // Return the response with created status and HATEOAS links
+        System.out.println("Final Response: " + resource);
         return ResponseEntity.status(HttpStatus.CREATED).body(resource);
     }
 
@@ -230,6 +258,59 @@ public class UserController {
         attr.getRequest().getSession().invalidate();
 
         return ResponseEntity.ok("Logout successful");
+    }
+
+
+    @GetMapping("/session/user")
+    public ResponseEntity<?> getSessionUser() {
+        System.out.println("\n[UserController.java] Getting Session User");
+        System.out.println("Location: /api/users/session/user");
+        
+        ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
+        HttpSession session = attr.getRequest().getSession(false);
+    
+        if (session == null || session.getAttribute("userId") == null) {
+            System.out.println("No session or userId found");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not logged in");
+        }
+    
+        String userId = (String) session.getAttribute("userId");
+        System.out.println("Session userId: " + userId);
+        
+        Optional<User> user = userService.findById(userId);
+        System.out.println("User found: " + (user.isPresent() ? "Yes" : "No"));
+
+        if (user.isPresent()) {
+            System.out.println("Returning user data: " + user.get());
+            return ResponseEntity.ok(user.get());
+        } else {
+            System.out.println("User not found in database");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
+        }
+    }
+
+
+    @GetMapping("/myFollowing/{userId}")
+public ResponseEntity<?> myFollowing(@PathVariable String userId) {
+    try {
+        List<User> following = userService.getFollowing(userId);
+        return ResponseEntity.ok(following);
+    } catch (Exception e) {
+        e.printStackTrace(); // Debug info
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error retrieving following list");
+    }
+}
+
+    @PostMapping("/updateAllUsersWithBio")
+    public ResponseEntity<?> updateAllUsersWithBio() {
+        List<User> allUsers = userService.findAllUsers();
+        for (User user : allUsers) {
+            if (user.getBio() == null) {
+                user.setBio("");
+                userService.updateUser(user);
+            }
+        }
+        return ResponseEntity.ok("All users updated with bio field");
     }
 
 }
