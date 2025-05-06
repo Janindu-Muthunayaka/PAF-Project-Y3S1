@@ -9,6 +9,7 @@ import PostList from '../../components/ish/PostList';
 import Avatar from '../../components/ish/ui/Avatar';
 import Button from '../../components/ish/ui/Button';
 import SkillsSection from '../Bumal/SkillsSection';
+import ViewPlans from '../Nadee/ViewPlans';
 
 const Profile = () => {
   const { userId } = useParams(); // viewed profile ID
@@ -263,6 +264,9 @@ const Profile = () => {
 />
 
 )}
+
+{activeTab === 'learning' && <ViewPlans />} {/* Render ViewPlans when Learning Plans tab is active */}
+
 
 
 
