@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { FiSearch, FiUserPlus, FiUserCheck } from 'react-icons/fi';
+import { Link } from 'react-router-dom';
 import { userService, sessionId } from '../../services/ish/api';
 
 const Network = () => {
@@ -123,7 +124,7 @@ const Network = () => {
           <div className="space-y-4">
             {filteredUsers.map(user => (
               <div key={user.id} className="flex items-center justify-between border-b pb-4 last:border-0 last:pb-0">
-                <div className="flex items-center">
+                <Link to={`/profile/${user.id}`} className="flex items-center flex-1">
                   {user.profilePicLink ? (
                     <img
                       src={user.profilePicLink}
@@ -141,14 +142,17 @@ const Network = () => {
                       {userFollowersMap[user.id] || 0} followers • {userFollowingMap[user.id] || 0} following
                     </p>
                   </div>
-                </div>
+                </Link>
                 <button
                   className={`flex items-center px-3 py-1 border rounded-full text-sm transition ${
                     isFollowing(user.id)
                       ? 'border-green-400 text-green-600 hover:bg-green-50'
                       : 'border-gray-300 text-gray-700 hover:bg-gray-50'
                   }`}
-                  onClick={() => handleFollowToggle(user.id)}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handleFollowToggle(user.id);
+                  }}
                 >
                   {isFollowing(user.id) ? (
                     <>

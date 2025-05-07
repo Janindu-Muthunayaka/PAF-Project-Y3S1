@@ -97,11 +97,11 @@ const Home = () => {
               <div className="flex justify-around">
                 <div className="text-center">
                   <p className="text-xl font-bold text-white">{user.followers ? user.followers.length : 0}</p>
-                  <p className="text-gray-400 text-sm">Following</p>
+                  <p className="text-gray-400 text-sm">Followers</p>
                 </div>
                 <div className="text-center">
                   <p className="text-xl font-bold text-white">{user.following ? user.following.length : 0}</p>
-                  <p className="text-gray-400 text-sm">Followers</p>
+                  <p className="text-gray-400 text-sm">Following</p>
                 </div>
               </div>
             </div>
