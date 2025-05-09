@@ -2,6 +2,9 @@ package com.skillora.app.service.Janindu;
 
 import com.skillora.app.model.Janindu.Comment;
 import com.skillora.app.repository.Janindu.CommentRepository;
+import com.skillora.app.service.NotifPostService;
+import com.skillora.app.service.Bumal.UserService;
+import com.skillora.app.repository.Ish.PostRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +17,15 @@ public class CommentService {
     private final CommentRepository commentRepository;
 
     @Autowired
+    private NotifPostService notifPostService;
+
+    @Autowired
+    private UserService userService;
+
+    @Autowired
+    private PostRepository postRepository;
+
+    @Autowired
     public CommentService(CommentRepository commentRepository) {
         this.commentRepository = commentRepository;
     }
@@ -21,7 +33,19 @@ public class CommentService {
     // Create a new comment
     public Comment createComment(Comment comment, String postId) {
         comment.setPostId(postId);
-        return commentRepository.save(comment);
+        Comment savedComment = commentRepository.save(comment);
+
+        // Get username for notification
+        String username = userService.findById(comment.getUserId()).get().getUserName();
+        
+        // Get post owner's user ID
+        String postOwnerId = postRepository.findById(postId).get().getUserId();
+        
+        // Add notification for the post owner
+        String notification = String.format("%s commented on your post", username);
+        notifPostService.addNotification(postOwnerId, notification);
+
+        return savedComment;
     }
 
     // Get all comments by postId

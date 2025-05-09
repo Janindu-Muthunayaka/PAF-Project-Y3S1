@@ -2,6 +2,7 @@ package com.skillora.app.service.Bumal;
 
 import com.skillora.app.model.Bumal.User;
 import com.skillora.app.repository.Bumal.UserRepository;
+import com.skillora.app.service.NotifPostService;
 
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,9 @@ import java.util.Optional;
 public class UserService {
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private NotifPostService notifPostService;
 
     public User register(User user) {
         return userRepository.save(user);
@@ -60,6 +64,10 @@ public class UserService {
                 userRepository.save(user1);
                 user2.getFollowers().add(String.valueOf(user1.getId()));
                 userRepository.save(user2);
+
+                // Add notification for the followed user
+                String notification = user1.getUserName() + " followed you";
+                notifPostService.addNotification(user2.getId(), notification);
             }
             return "Followed";
         }
