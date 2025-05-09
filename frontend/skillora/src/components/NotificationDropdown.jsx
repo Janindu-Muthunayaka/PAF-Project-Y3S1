@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { notificationService } from '../services/notificationService';
-import { FaBell, FaTimes, FaHeart, FaComment } from 'react-icons/fa';
+import { FaBell, FaTimes, FaHeart, FaComment, FaUserPlus } from 'react-icons/fa';
 
 const NotificationDropdown = ({ userId }) => {
     const [notifications, setNotifications] = useState([]);
@@ -57,8 +57,20 @@ const NotificationDropdown = ({ userId }) => {
     };
 
     const formatNotification = (notification) => {
+        // Check if it's a follow notification
+        if (notification.includes('followed you')) {
+            const username = notification.split(' followed you')[0];
+            return (
+                <div className="flex items-center space-x-2">
+                    <FaUserPlus className="text-green-500 w-4 h-4" />
+                    <p className="text-sm text-gray-700">
+                        <span className="font-bold">{username}</span> followed you
+                    </p>
+                </div>
+            );
+        }
         // Check if it's a reaction notification
-        if (notification.includes('reacted to your post with')) {
+        else if (notification.includes('reacted to your post with')) {
             const [username, reaction] = notification.split(' reacted to your post with ');
             return (
                 <div className="flex items-center space-x-2">
