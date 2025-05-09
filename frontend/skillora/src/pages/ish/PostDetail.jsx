@@ -60,28 +60,55 @@ const PostDetail = () => {
     try {
       const response = await commentService.getCommentsByPostId(postId);
       const commentsData = response.data;
+      console.log("Fetched comments:", commentsData);
   
       // Fetch replies for each comment and attach them
       const commentsWithReplies = await Promise.all(
         commentsData.map(async (comment) => {
-          const replyResponse = await replyService.getRepliesForComment(comment.id);
-          return {
-            ...comment,
-            replies: replyResponse.data,
-          };
+          try {
+            console.log("Fetching replies for comment:", comment.id);
+            const replyResponse = await replyService.getRepliesForComment(comment.id);
+            console.log("Fetched replies for comment:", comment.id, replyResponse.data);
+            return {
+              ...comment,
+              replies: replyResponse.data,
+            };
+          } catch (error) {
+            console.error(`Error fetching replies for comment ${comment.id}:`, error);
+            return {
+              ...comment,
+              replies: [],
+            };
+          }
         })
       );
       
+      console.log("Comments with replies:", commentsWithReplies);
       setComments(commentsWithReplies);
   
-      // Fetch usernames for each unique userId
+      // Fetch usernames for each unique userId (both comments and replies)
       const newUsernames = {};
       for (const comment of commentsWithReplies) {
-        const userId = comment.userId;
-        if (!usernames[userId]) {
-          const username = await getUsernameById(userId);
+        // Get username for comment author
+        const commentUserId = comment.userId;
+        if (!usernames[commentUserId]) {
+          const username = await getUsernameById(commentUserId);
           if (username) {
-            newUsernames[userId] = username;
+            newUsernames[commentUserId] = username;
+          }
+        }
+
+        // Get usernames for reply authors
+        if (comment.replies && comment.replies.length > 0) {
+          console.log("Processing replies for comment:", comment.id, comment.replies);
+          for (const reply of comment.replies) {
+            const replyUserId = reply.userId;
+            if (!usernames[replyUserId]) {
+              const username = await getUsernameById(replyUserId);
+              if (username) {
+                newUsernames[replyUserId] = username;
+              }
+            }
           }
         }
       }
@@ -90,6 +117,7 @@ const PostDetail = () => {
       setUsernames((prev) => ({ ...prev, ...newUsernames }));
     } catch (error) {
       console.error("Error fetching comments:", error);
+      toast.error("Failed to load comments");
     }
   };
   
@@ -150,12 +178,19 @@ const PostDetail = () => {
   const handleAddReply = async (commentId) => {
     if (!replyContent.trim()) return;
     try {
-      await replyService.createReply(commentId, user.id, replyContent);
+      console.log("Creating reply for comment:", commentId);
+      console.log("Reply content:", replyContent);
+      console.log("User ID:", user.id);
+      
+      const response = await replyService.createReply(commentId, user.id, replyContent);
+      console.log("Reply created:", response.data);
+      
       setReplyContent("");
       setActiveReply(null);
-      fetchComments();
+      await fetchComments(); // Ensure we refetch comments after adding reply
     } catch (error) {
       console.error("Error adding reply:", error);
+      toast.error("Failed to add reply");
     }
   };
 
