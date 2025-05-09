@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { FiSearch, FiUserPlus, FiUserCheck } from 'react-icons/fi';
 import { Link } from 'react-router-dom';
 import { userService, sessionId } from '../../services/ish/api';
+import { toast } from 'react-toastify';
 
 const Network = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -65,6 +66,7 @@ const Network = () => {
           ...prev,
           [targetUserId]: Math.max(0, (prev[targetUserId] || 0) - 1)
         }));
+        toast.success('Unfollowed successfully');
       } else {
         await userService.followUser(currentUser.id, targetUserId);
         setFollowingIds(prev => [...prev, targetUserId]);
@@ -73,9 +75,11 @@ const Network = () => {
           ...prev,
           [targetUserId]: (prev[targetUserId] || 0) + 1
         }));
+        toast.success('Followed successfully');
       }
     } catch (err) {
       console.error('Error toggling follow:', err);
+      toast.error('Failed to update follow status');
     }
   };
 

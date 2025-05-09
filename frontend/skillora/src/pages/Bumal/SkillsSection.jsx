@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { FiPlus, FiTrash2, FiEdit2 } from 'react-icons/fi'; // ✅ FiEdit2 imported
 import { getSkills, addSkill, deleteSkill, updateSkill } from '../../services/ish/skillService';
+import { toast } from 'react-toastify';
 
-const SkillsSection = ({ userId: propUserId, isCurrentUser }) => {
+const SkillsSection = ({ userId: propUserId, isCurrentUser, onAddSkill, onDeleteSkill }) => {
   const [skills, setSkills] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [newSkill, setNewSkill] = useState({ skillName: '', description: '' });
@@ -17,17 +18,24 @@ const SkillsSection = ({ userId: propUserId, isCurrentUser }) => {
       setSkills(data);
     } catch (err) {
       console.error("Failed to fetch skills", err);
+      toast.error("Failed to fetch skills");
     }
   };
 
   const handleAddOrEditSkill = async () => {
-    if (!newSkill.skillName.trim()) return;
+    if (!newSkill.skillName.trim()) {
+      toast.error("Skill name is required");
+      return;
+    }
 
     try {
       if (editingSkill) {
-        await updateSkill(editingSkill.id, { ...newSkill, userId }); // ✅ use id not skillId
+        await updateSkill(editingSkill.id, { ...newSkill, userId });
+        toast.success(`Updated skill: ${newSkill.skillName}`);
       } else {
-        await addSkill({ ...newSkill, userId });
+        const addedSkill = await addSkill({ ...newSkill, userId });
+        onAddSkill?.(addedSkill);
+        toast.success(`Added skill: ${newSkill.skillName}`);
       }
 
       setNewSkill({ skillName: '', description: '' });
@@ -36,6 +44,7 @@ const SkillsSection = ({ userId: propUserId, isCurrentUser }) => {
       fetchSkills();
     } catch (err) {
       console.error("Failed to submit skill", err);
+      toast.error("Failed to save skill");
     }
   };
 
@@ -55,9 +64,12 @@ const SkillsSection = ({ userId: propUserId, isCurrentUser }) => {
 
     try {
       await deleteSkill(skillToDelete.id);
+      onDeleteSkill?.(skillToDelete.skillName);
+      toast.success(`Removed skill: ${skillToDelete.skillName}`);
       fetchSkills();
     } catch (err) {
       console.error("Failed to delete skill", err);
+      toast.error("Failed to delete skill");
     } finally {
       setShowDeleteConfirm(false);
       setSkillToDelete(null);
