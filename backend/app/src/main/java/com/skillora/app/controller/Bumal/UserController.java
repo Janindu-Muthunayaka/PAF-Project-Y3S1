@@ -155,7 +155,7 @@ public class UserController {
         }
 
        
-        //CollectionModel<User> resource = CollectionModel.of(user);
+        
         //resource.add(WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(UserController.class).getAllUsers()).withSelfRel());
 
         // Return response with HATEOAS links
