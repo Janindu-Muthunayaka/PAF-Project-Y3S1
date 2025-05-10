@@ -226,7 +226,7 @@ const PostDetail = () => {
           }));
         }
       }
-
+//update ui
       setError(null);
     } catch (err) {
       setError("Failed to load post");

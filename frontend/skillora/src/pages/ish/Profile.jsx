@@ -12,9 +12,9 @@ import SkillsSection from '../Bumal/SkillsSection';
 import ViewPlans from '../Nadee/ViewPlans';
 
 const Profile = () => {
-  const { userId } = useParams(); // viewed profile ID
-  const [user, setUser] = useState(null); // currently logged in user
-  const [profileData, setProfileData] = useState(null); // profile being viewed
+  const { userId } = useParams(); 
+  const [user, setUser] = useState(null); 
+  const [profileData, setProfileData] = useState(null); 
   const [posts, setPosts] = useState([]);
   const [pinnedPosts, setPinnedPosts] = useState([]);
   const [followers, setFollowers] = useState([]);
