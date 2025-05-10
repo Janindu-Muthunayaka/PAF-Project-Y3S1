@@ -2,7 +2,6 @@ package com.skillora.app.controller.Janindu;
 
 import com.skillora.app.model.Janindu.Comment;
 import com.skillora.app.service.Janindu.CommentService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,8 +13,6 @@ import java.util.List;
 public class CommentController {
 
     private final CommentService commentService;
-
-    @Autowired
     public CommentController(CommentService commentService) {
         this.commentService = commentService;
     }
@@ -28,7 +25,7 @@ public class CommentController {
         return new ResponseEntity<>(createdComment, HttpStatus.CREATED);
     }
 
-    // Get all comments for a specific post
+    // Get all comments for a post
     @GetMapping("/{postId}")
     public ResponseEntity<List<Comment>> getCommentsByPostId(@PathVariable String postId) {
         List<Comment> comments = commentService.getCommentsByPostId(postId);
@@ -46,7 +43,7 @@ public class CommentController {
         }
     }
 
-    // Update an existing comment
+    // Update existing comment
     @PutMapping("/{commentId}")
     public ResponseEntity<Comment> updateComment(@PathVariable String commentId, @RequestBody Comment updatedComment) {
         Comment comment = commentService.updateComment(commentId, updatedComment);
