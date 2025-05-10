@@ -4,7 +4,7 @@ import { FiEdit, FiDelete, FiBookOpen, FiCode, FiGrid, FiBookmark } from 'react-
 import { motion } from 'framer-motion';
 import { sessionId } from '../../services/ish/api';
 import { postService } from '../../services/ish/api';
-import { userService } from '../../services/ish/api';  // Importing the userService
+import { userService } from '../../services/ish/api';  
 import PostList from '../../components/ish/PostList';
 import Avatar from '../../components/ish/ui/Avatar';
 import Button from '../../components/ish/ui/Button';
