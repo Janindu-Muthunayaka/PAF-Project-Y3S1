@@ -62,7 +62,7 @@ const CreatePost = () => {
     }
   }, [files]);
 
-  // Close dropdown when clicking outside
+  // Close dropdown 
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (categoryDropdownRef.current && !categoryDropdownRef.current.contains(event.target)) {
