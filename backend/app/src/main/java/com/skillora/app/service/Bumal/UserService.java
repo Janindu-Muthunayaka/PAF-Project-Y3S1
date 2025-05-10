@@ -56,9 +56,9 @@ public class UserService {
                 return "User already followed";
             }
             else{
-                user1.getFollowers().add(String.valueOf(user2.getId()));
+                user1.getFollowing().add(String.valueOf(user2.getId()));
                 userRepository.save(user1);
-                user2.getFollowing().add(String.valueOf(user1.getId()));
+                user2.getFollowers().add(String.valueOf(user1.getId()));
                 userRepository.save(user2);
             }
             return "Followed";
@@ -84,17 +84,16 @@ public class UserService {
         User user2 = userRepository.findById(userId2).orElse(null);
         System.out.print(user1 + " / " + user2);
         if (user1 != null && user2 != null) {
-            if(user1.getFollowers().contains(String.valueOf(user2.getId()))){
-                user1.getFollowers().remove(String.valueOf(user2.getId()));
+            if(user1.getFollowing().contains(String.valueOf(user2.getId()))){
+                user1.getFollowing().remove(String.valueOf(user2.getId()));
                 userRepository.save(user1);
-                user2.getFollowing().remove(String.valueOf(user1.getId()));
+                user2.getFollowers().remove(String.valueOf(user1.getId()));
                 userRepository.save(user2);
-
+                return "UnFollowed";
             }
             else{
                 return "User not followed";
             }
-            return "UnFollowed";
         }
         return "Error";
     }
