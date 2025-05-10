@@ -187,7 +187,7 @@ const PostDetail = () => {
       
       setReplyContent("");
       setActiveReply(null);
-      await fetchComments(); // Ensure we refetch comments after adding reply
+      await fetchComments();
     } catch (error) {
       console.error("Error adding reply:", error);
       toast.error("Failed to add reply");
