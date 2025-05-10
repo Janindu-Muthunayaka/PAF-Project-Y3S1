@@ -202,7 +202,7 @@ const Home = () => {
           </div>
         </div>
 
-        {/* Post Feed Controls */}
+        
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div className="flex items-center space-x-2">
             <Button
@@ -298,7 +298,7 @@ const Home = () => {
           </div>
         )}
 
-        {/* Post Feed */}
+        {/* Post Feed */} 
         {loading ? (
           <div className="flex justify-center py-12">
             <div className="spinner"></div>
