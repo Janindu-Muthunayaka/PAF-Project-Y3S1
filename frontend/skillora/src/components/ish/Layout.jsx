@@ -246,7 +246,7 @@ const Layout = ({ children }) => {
                 )}
               </div>
               
-              {/* Mobile menu button */}
+              
               <button
                 type="button"
                 className="md:hidden p-2 rounded-md text-gray-400 hover:text-white hover:bg-[var(--dark-surface-light)]"
