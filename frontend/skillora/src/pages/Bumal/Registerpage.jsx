@@ -44,9 +44,8 @@ const RegisterPage = () => {
       console.log("Registration Response:", response.data);
 
       if (response.data) {
-        sessionStorage.setItem('userData', JSON.stringify(response.data));
-        console.log("User data stored in session:", response.data);
-        navigate('/');
+        console.log("Registration successful, redirecting to login");
+        navigate('/login');
       }
     } catch (err) {
       console.error('Registration error:', err);
