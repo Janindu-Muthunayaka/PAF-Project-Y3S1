@@ -7,7 +7,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class Skill {
     @Id
     private String id;
-    private String userId;  // Reference to the user who added the skill
+    private String userId;  // Reference 
     private String skillName;
     private String description;
 
