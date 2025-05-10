@@ -2,7 +2,6 @@ package com.skillora.app.controller.Janindu;
 
 import com.skillora.app.model.Janindu.Comment;
 import com.skillora.app.service.Janindu.CommentService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,7 +14,6 @@ public class CommentController {
 
     private final CommentService commentService;
 
-    @Autowired
     public CommentController(CommentService commentService) {
         this.commentService = commentService;
     }
