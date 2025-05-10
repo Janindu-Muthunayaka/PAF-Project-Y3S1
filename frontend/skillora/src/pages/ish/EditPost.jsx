@@ -188,7 +188,7 @@ const EditPost = () => {
       if (keepExistingMedia && files.length === 0) {
         await postService.updatePost(user.id,postId, postData, []);
       } else {
-        // Otherwise update with new files
+        
         await postService.updatePost(user.id,postId, postData, files);
       }
       
