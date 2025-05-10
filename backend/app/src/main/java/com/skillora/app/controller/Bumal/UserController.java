@@ -156,7 +156,7 @@ public class UserController {
 
        
         
-        //resource.add(WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(UserController.class).getAllUsers()).withSelfRel());
+        
 
         // Return response with HATEOAS links
         return ResponseEntity.ok(user);
