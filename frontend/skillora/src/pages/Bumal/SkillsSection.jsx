@@ -22,14 +22,14 @@ const SkillsSection = ({ userId: propUserId, isCurrentUser, onAddSkill, onDelete
     }
   };
 
-  const handleAddOrEditSkill = async () => {
+  const handleAddOrEditSkill = async () => { // Handle adding or editing a skill
     if (!newSkill.skillName.trim()) {
       toast.error("Skill name is required");
       return;
     }
 
     try {
-      if (editingSkill) {
+      if (editingSkill) {    
         await updateSkill(editingSkill.id, { ...newSkill, userId });
         toast.success(`Updated skill: ${newSkill.skillName}`);
       } else {
@@ -54,7 +54,7 @@ const SkillsSection = ({ userId: propUserId, isCurrentUser, onAddSkill, onDelete
     setShowModal(true);
   };
 
-  const handleDeleteClick = (skill) => {
+  const handleDeleteClick = (skill) => { // Handle delete button click
     setSkillToDelete(skill);
     setShowDeleteConfirm(true);
   };
