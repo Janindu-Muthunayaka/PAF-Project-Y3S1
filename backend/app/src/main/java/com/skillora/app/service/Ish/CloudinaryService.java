@@ -35,7 +35,7 @@ public class CloudinaryService {
                 Media.MediaType.IMAGE
             );
         } else if (file.getContentType().startsWith("video/")) {
-            // For videos, don't add the duration transformation directly in upload
+            // For videos, don't add the duration transformation
             uploadResult = cloudinary.uploader().upload(
                 file.getBytes(), 
                 ObjectUtils.asMap(
@@ -48,8 +48,8 @@ public class CloudinaryService {
             String publicId = uploadResult.get("public_id").toString();
             String secureUrl = uploadResult.get("secure_url").toString();
             
-            // You could append transformation parameters to URL if needed
-            // But for now, let's just use the regular URL
+            
+            
             
             return new Media(
                 secureUrl,
