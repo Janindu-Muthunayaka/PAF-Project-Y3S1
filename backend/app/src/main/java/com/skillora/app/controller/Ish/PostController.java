@@ -49,7 +49,7 @@ public ResponseEntity<PostResponse> createPost(
     }
 }
 
-    
+    // notification set
     @GetMapping("/{id}")
     public ResponseEntity<PostResponse> getPostById(@PathVariable String id) {
         try {
