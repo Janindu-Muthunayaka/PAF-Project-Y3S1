@@ -10,7 +10,7 @@ const SkillsSection = ({ userId: propUserId, isCurrentUser, onAddSkill, onDelete
   const [editingSkill, setEditingSkill] = useState(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [skillToDelete, setSkillToDelete] = useState(null);
-  const userId = propUserId || sessionStorage.getItem("sessionId"); // ✅ fallback to session if not passed
+  const userId = propUserId || sessionStorage.getItem("sessionId"); 
 
   const fetchSkills = async () => {
     try {
