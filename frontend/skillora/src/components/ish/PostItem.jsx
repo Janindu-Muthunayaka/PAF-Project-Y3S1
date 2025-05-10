@@ -64,7 +64,7 @@ const PostItem = ({ post }) => {
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [bookmarked, setBookmarked] = useState(false);
   
-  // Fetch reactions when post loads or changes
+ 
   useEffect(() => {
     const fetchReactions = async () => {
       try {
