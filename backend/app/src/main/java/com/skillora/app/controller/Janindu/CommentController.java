@@ -28,7 +28,7 @@ public class CommentController {
         return new ResponseEntity<>(createdComment, HttpStatus.CREATED);
     }
 
-    // Get all comments for a specific post
+    // Get all comments for a post
     @GetMapping("/{postId}")
     public ResponseEntity<List<Comment>> getCommentsByPostId(@PathVariable String postId) {
         List<Comment> comments = commentService.getCommentsByPostId(postId);
