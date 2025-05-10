@@ -154,7 +154,7 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Users not found");
         }
 
-        // Add self link
+        // Add self lin
         //CollectionModel<User> resource = CollectionModel.of(user);
         //resource.add(WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(UserController.class).getAllUsers()).withSelfRel());
 
