@@ -19,6 +19,7 @@ import {
 import { useUser } from '../../context/ish/UserContext';
 import Avatar from './ui/Avatar';
 import { userService } from '../../services/ish/api';
+import NotificationDropdown from '../NotificationDropdown';
 
 const Layout = ({ children }) => {
   const { user } = useUser();
@@ -133,15 +134,8 @@ const Layout = ({ children }) => {
             </div>
 
             <div className="flex items-center space-x-4">
-              
-
               {/* Notifications */}
-              <button className="p-2 text-gray-300 hover:text-white relative rounded-full hover:bg-[var(--dark-surface-light)]">
-                <FiBell className="h-6 w-6" />
-                <span className="absolute top-0 right-0 bg-[var(--danger)] rounded-full w-4 h-4 text-xs text-white flex items-center justify-center">
-                  3
-                </span>
-              </button>
+              <NotificationDropdown userId={user.id} />
 
               {/* Create Menu */}
               <div className="relative create-menu-container">
