@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { FiPlus, FiTrash2, FiEdit2 } from 'react-icons/fi'; // ✅ FiEdit2 imported
+import { FiPlus, FiTrash2, FiEdit2 } from 'react-icons/fi'; 
 import { getSkills, addSkill, deleteSkill, updateSkill } from '../../services/ish/skillService';
 import { toast } from 'react-toastify';
 
