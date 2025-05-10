@@ -158,7 +158,7 @@ public class UserController {
         
         
 
-        // Return response with HATEOAS links
+        
         return ResponseEntity.ok(user);
     }
 
