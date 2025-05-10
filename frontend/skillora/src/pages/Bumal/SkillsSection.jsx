@@ -12,13 +12,13 @@ const SkillsSection = ({ userId: propUserId, isCurrentUser, onAddSkill, onDelete
   const [skillToDelete, setSkillToDelete] = useState(null);
   const userId = propUserId || sessionStorage.getItem("sessionId"); 
 
-  const fetchSkills = async () => {
+  const fetchSkills = async () => {   // Fetch skills from the server
     try {
       const data = await getSkills(userId);
       setSkills(data);
     } catch (err) {
       console.error("Failed to fetch skills", err);
-      toast.error("Failed to fetch skills");
+      toast.error("Failed to fetch skills"); // Show a toast notification
     }
   };
 
