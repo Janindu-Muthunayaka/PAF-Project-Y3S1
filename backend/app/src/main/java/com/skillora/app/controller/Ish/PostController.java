@@ -40,7 +40,7 @@ public ResponseEntity<PostResponse> createPost(
 
         PostRequest postRequest = objectMapper.readValue(postRequestJson, PostRequest.class);
 
-        // Now pass 'id' from PathVariable instead of 'userId'
+        // pass 'id' 
         PostResponse createdPost = postService.createPost(postRequest, files, id);
         return new ResponseEntity<>(createdPost, HttpStatus.CREATED);
     } catch (Exception e) {
