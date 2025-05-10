@@ -12,9 +12,7 @@ import java.util.List;
 @RequestMapping("/api/comments")
 public class CommentController {
 
-    private final CommentService commentService;
-
-
+    private final CommentService commentService
     public CommentController(CommentService commentService) {
         this.commentService = commentService;
     }
@@ -27,7 +25,7 @@ public class CommentController {
         return new ResponseEntity<>(createdComment, HttpStatus.CREATED);
     }
 
-    // Get all comments for a specific post
+    // Get all comments for a post
     @GetMapping("/{postId}")
     public ResponseEntity<List<Comment>> getCommentsByPostId(@PathVariable String postId) {
         List<Comment> comments = commentService.getCommentsByPostId(postId);
@@ -45,7 +43,7 @@ public class CommentController {
         }
     }
 
-    // Update an existing comment
+    // Update existing comment
     @PutMapping("/{commentId}")
     public ResponseEntity<Comment> updateComment(@PathVariable String commentId, @RequestBody Comment updatedComment) {
         Comment comment = commentService.updateComment(commentId, updatedComment);
