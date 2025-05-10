@@ -46,7 +46,7 @@ public class CommentController {
         }
     }
 
-    // Update an existing comment
+    // Update existing comment
     @PutMapping("/{commentId}")
     public ResponseEntity<Comment> updateComment(@PathVariable String commentId, @RequestBody Comment updatedComment) {
         Comment comment = commentService.updateComment(commentId, updatedComment);
